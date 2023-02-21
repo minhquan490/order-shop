@@ -15,6 +15,7 @@ import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,11 +28,12 @@ import java.util.Set;
 @Table(name = "CART", indexes = @Index(name = "idx_cart_customer", columnList = "CUSTOMER_ID"))
 @Label("CRT-")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
+@EqualsAndHashCode(callSuper = true)
 public class Cart extends AbstractEntity {
 
     @Id
     @Column(name = "ID", nullable = false, unique = true, columnDefinition = "varchar(10)")
-    private Object id;
+    private String id;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "CUSTOMER_ID", unique = true, nullable = false, updatable = false)
@@ -53,6 +55,6 @@ public class Cart extends AbstractEntity {
         if (!(id instanceof String)) {
             throw new PersistenceException("Id of cart must be string");
         }
-        this.id = id;
+        this.id = (String) id;
     }
 }

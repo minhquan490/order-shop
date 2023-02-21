@@ -10,7 +10,10 @@ import jakarta.persistence.EntityManager;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Isolation;
@@ -22,6 +25,8 @@ import java.util.Collection;
 
 @Repository
 @Log4j2
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@Primary
 class CustomerHistoryRepositoryImpl extends AbstractRepository<CustomerHistory, Integer> implements CustomerHistoryRepository {
 
     @Autowired

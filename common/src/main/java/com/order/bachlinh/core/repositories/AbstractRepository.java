@@ -4,6 +4,8 @@ import com.order.bachlinh.core.annotation.IdentifierGenerator;
 import com.order.bachlinh.core.annotation.Validated;
 import com.order.bachlinh.core.entities.model.BaseEntity;
 import com.order.bachlinh.core.entities.spi.EntityFactory;
+import com.order.bachlinh.core.entities.spi.EntityManagerHolder;
+import com.order.bachlinh.core.entities.spi.HintDecorator;
 import jakarta.persistence.CacheRetrieveMode;
 import jakarta.persistence.CacheStoreMode;
 import jakarta.persistence.Cacheable;
@@ -22,9 +24,10 @@ import org.springframework.lang.NonNull;
 import java.lang.reflect.ParameterizedType;
 
 @Log4j2
-public abstract class AbstractRepository<T extends BaseEntity, ID> extends SimpleJpaRepository<T, ID> implements HintDecorator {
+public abstract class AbstractRepository<T extends BaseEntity, ID> extends SimpleJpaRepository<T, ID> implements HintDecorator, EntityManagerHolder {
     private SessionFactory sessionFactory;
     private EntityFactory entityFactory;
+    private EntityManager entityManager;
     private Class<T> type;
     private boolean useCache;
 
@@ -37,6 +40,7 @@ public abstract class AbstractRepository<T extends BaseEntity, ID> extends Simpl
         this(domainClass, em);
         this.sessionFactory = sessionFactory;
         this.entityFactory = entityFactory;
+        this.entityManager = em;
         this.type = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
         this.useCache = type.isAnnotationPresent(Cacheable.class) && type.isAnnotationPresent(Cache.class);
     }
@@ -86,6 +90,11 @@ public abstract class AbstractRepository<T extends BaseEntity, ID> extends Simpl
     @NonNull
     public <S extends T> S save(@NonNull S entity) {
         return super.save(entity);
+    }
+
+    @Override
+    public EntityManager getEntityManager() {
+        return entityManager;
     }
 
     protected boolean isUseCache() {

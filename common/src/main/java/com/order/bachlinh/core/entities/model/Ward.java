@@ -1,8 +1,6 @@
 package com.order.bachlinh.core.entities.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.order.bachlinh.core.annotation.Validator;
-import com.order.bachlinh.core.entities.spi.validator.ProductPictureValidator;
+import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,33 +17,47 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-@Entity
-@Table(name = "PRODUCT_MEDIA", indexes = @Index(name = "idx_product_media_product", columnList = "PRODUCT_ID"))
+@EqualsAndHashCode(callSuper = true)
 @Getter
 @Setter
+@Entity
+@Table(
+        name = "WARD",
+        indexes = {
+                @Index(name = "idx_ward_name", columnList = "NAME"),
+                @Index(name = "idx_ward_code", columnList = "CODE")
+        }
+)
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "ward")
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-@Validator(validators = ProductPictureValidator.class)
-@EqualsAndHashCode(callSuper = true)
-public class ProductMedia extends AbstractEntity {
+public class Ward extends AbstractEntity {
 
     @Id
-    @Column(name = "ID", nullable = false, unique = true, columnDefinition = "int")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID", nullable = false, unique = true)
     private Integer id;
 
-    @Column(name = "URL", nullable = false, length = 100)
-    private String url;
+    @Column(name = "NAME", length = 100)
+    private String name;
+
+    @Column(name = "CODE")
+    private Integer code;
+
+    @Column(name = "CODE_NAME", length = 50)
+    private String codeName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PRODUCT_ID", nullable = false)
-    @JsonIgnore
-    private Product product;
+    @JoinColumn(name = "DISTRICT_ID", nullable = false, unique = true)
+    private District district;
 
     @Override
     public void setId(Object id) {
         if (!(id instanceof Integer)) {
-            throw new PersistenceException("Id of product picture must be int");
+            throw new PersistenceException("Id of ward must be int");
         }
         this.id = (Integer) id;
     }

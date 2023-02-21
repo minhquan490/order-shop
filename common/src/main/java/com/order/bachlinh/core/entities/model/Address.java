@@ -12,6 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,11 +24,12 @@ import lombok.Setter;
 @Table(name = "ADDRESS")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Validator(validators = AddressValidator.class)
+@EqualsAndHashCode(callSuper = true)
 public class Address extends AbstractEntity {
 
     @Id
     @Column(name = "ID", nullable = false, unique = true, columnDefinition = "varchar(10)")
-    private Object id;
+    private String id;
 
     @Column(name = "VALUE", nullable = false)
     private String value;
@@ -52,6 +54,6 @@ public class Address extends AbstractEntity {
         if (!(id instanceof String)) {
             throw new PersistenceException("Address entity must be string");
         }
-        this.id = id;
+        this.id = (String) id;
     }
 }

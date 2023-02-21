@@ -10,11 +10,9 @@ import org.springframework.context.annotation.ClassPathScanningCandidateComponen
 import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.springframework.objenesis.SpringObjenesis;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -69,18 +67,14 @@ class DefaultSetupManager implements SetupManager {
 
     @SuppressWarnings("unchecked")
     private Collection<Class<Setup>> scan() throws ClassNotFoundException {
-        List<String> packages = List.of("com.order.bachlinh.core.component.setup.provide");
+        String basePackage = "com.order.bachlinh.core.component.setup.provide";
         ClassPathScanningCandidateComponentProvider scanner = createClassPathScanningCandidateComponentProvider(
                 this.applicationContext);
         scanner.addIncludeFilter(new AssignableTypeFilter(Setup.class));
         Set<Class<Setup>> entitySet = new HashSet<>();
         ClassLoader classLoader = ClassUtils.getDefaultClassLoader();
-        for (String basePackage : packages) {
-            if (StringUtils.hasText(basePackage)) {
-                for (BeanDefinition candidate : scanner.findCandidateComponents(basePackage)) {
-                    entitySet.add((Class<Setup>) Objects.requireNonNull(classLoader).loadClass(candidate.getBeanClassName()));
-                }
-            }
+        for (BeanDefinition candidate : scanner.findCandidateComponents(basePackage)) {
+            entitySet.add((Class<Setup>) Objects.requireNonNull(classLoader).loadClass(candidate.getBeanClassName()));
         }
         return entitySet;
     }

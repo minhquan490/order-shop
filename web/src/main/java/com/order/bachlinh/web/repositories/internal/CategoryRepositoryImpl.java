@@ -9,7 +9,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.JoinType;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -19,6 +22,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+@Primary
 class CategoryRepositoryImpl extends AbstractRepository<Category, String> implements CategoryRepository {
 
     @Autowired

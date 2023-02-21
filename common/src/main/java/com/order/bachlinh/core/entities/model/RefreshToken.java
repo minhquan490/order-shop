@@ -12,6 +12,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,12 +25,13 @@ import java.sql.Timestamp;
 @Setter
 @Label("RFT-")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
+@EqualsAndHashCode(callSuper = true)
 public class RefreshToken extends AbstractEntity {
 
     @Id
     @Column(name = "ID", unique = true, nullable = false, columnDefinition = "varchar(10)")
     @JsonIgnore
-    private Object id;
+    private String id;
 
     @Column(name = "TIME_CREATED", nullable = false)
     private Timestamp timeCreated;
@@ -46,9 +48,9 @@ public class RefreshToken extends AbstractEntity {
     private Customer customer;
 
     public void setId(Object id) {
-        if (id instanceof String casted) {
-            this.id = casted;
+        if (!(id instanceof String)) {
+            throw new PersistenceException("Id of refresh token is only string");
         }
-        throw new PersistenceException("Id of refresh token is only string");
+        this.id = (String) id;
     }
 }

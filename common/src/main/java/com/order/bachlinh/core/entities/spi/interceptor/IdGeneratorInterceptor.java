@@ -1,8 +1,9 @@
 package com.order.bachlinh.core.entities.spi.interceptor;
 
+import com.order.bachlinh.core.entities.model.BaseEntity;
 import com.order.bachlinh.core.entities.spi.EntityContext;
 import com.order.bachlinh.core.entities.spi.EntityFactory;
-import com.order.bachlinh.core.entities.model.BaseEntity;
+import jakarta.persistence.GeneratedValue;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -12,7 +13,10 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
+import java.lang.reflect.ParameterizedType;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The aspect for intercept method mark by {@link com.order.bachlinh.core.annotation.IdentifierGenerator}
@@ -35,31 +39,49 @@ public class IdGeneratorInterceptor {
      * Inject id for entity before save into a database.
      * */
     @Around("intercept()")
-    public Object accept(ProceedingJoinPoint joinPoint) {
-        BaseEntity entity = findEntityParam(joinPoint);
-        EntityContext context = factory.getEntityContext(entity.getClass());
-        if (entity.getId() == null) {
-            entity.setId(context.getNextId());
+    public Object accept(ProceedingJoinPoint joinPoint) throws Throwable {
+        Collection<BaseEntity> entities = findEntityParams(joinPoint);
+        EntityContext context = null;
+        for (BaseEntity entity : entities) {
+            context = factory.getEntityContext(entity.getClass());
+            if (hasGeneratedValue(entity)) {
+                continue;
+            }
+            if (entity.getId() == null) {
+                entity.setId(context.getNextId());
+            }
         }
         try {
-            return joinPoint.proceed(Collections.singleton(entity).toArray());
+            return joinPoint.proceed(entities.toArray());
         } catch (Throwable e) {
-            context.rollback();
-            throw new IllegalStateException("Can not process join point for entity [" + entity.getClass().getSimpleName() + "]", e);
+            if (context != null) {
+                context.rollback();
+            }
+            throw new IllegalStateException("Has problem when generate id", e);
         }
     }
 
-    private BaseEntity findEntityParam(ProceedingJoinPoint joinPoint) {
-        BaseEntity entity = null;
+    @SuppressWarnings("unchecked")
+    private Collection<BaseEntity> findEntityParams(ProceedingJoinPoint joinPoint) {
+        Set<BaseEntity> entities = new HashSet<>();
         Object[] args = joinPoint.getArgs();
         for (Object arg : args) {
             if (arg.getClass().isAssignableFrom(BaseEntity.class)) {
-                entity = (BaseEntity) arg;
+                entities.add((BaseEntity) arg);
+            }
+            if (arg.getClass().isAssignableFrom(Collection.class)) {
+                // Get a generic type from a collection
+                // Example Collection<T> -> get T and check type of it
+                Class<?> entityType = (Class<?>) ((ParameterizedType) arg.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+                if (entityType.isAssignableFrom(BaseEntity.class)) {
+                    entities.addAll(((Collection<BaseEntity>) arg));
+                }
             }
         }
-        if (entity == null) {
-            throw new IllegalArgumentException("Use @IdentifierGenerator on save method only");
-        }
-        return entity;
+        return entities;
+    }
+
+    private boolean hasGeneratedValue(BaseEntity entity) {
+        return entity.getClass().getAnnotation(GeneratedValue.class) != null;
     }
 }

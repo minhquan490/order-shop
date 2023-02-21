@@ -12,8 +12,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.JoinType;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +37,7 @@ import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @Repository
 @Primary
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 class CustomerRepositoryImpl extends AbstractRepository<Customer, String> implements CustomerRepository {
     private final AtomicLong customerCount = new AtomicLong(0);
 

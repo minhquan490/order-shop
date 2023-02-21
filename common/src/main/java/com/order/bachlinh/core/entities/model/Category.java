@@ -18,6 +18,7 @@ import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,11 +36,12 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "category")
+@EqualsAndHashCode(callSuper = true)
 public class Category extends AbstractEntity {
 
     @Id
     @Column(name = "ID", unique = true, nullable = false, columnDefinition = "varchar(10)")
-    private Object id;
+    private String id;
 
     @Column(name = "NAME", unique = true, nullable = false, length = 60)
     private String name;
@@ -60,6 +62,6 @@ public class Category extends AbstractEntity {
         if (!(id instanceof String)) {
             throw new PersistenceException("Id of category must be string");
         }
-        this.id = id;
+        this.id = (String) id;
     }
 }

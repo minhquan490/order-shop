@@ -1,4 +1,4 @@
-package com.order.bachlinh.core.repositories;
+package com.order.bachlinh.core.entities.spi;
 
 import jakarta.persistence.TypedQuery;
 

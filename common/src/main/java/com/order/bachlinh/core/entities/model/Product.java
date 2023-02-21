@@ -16,6 +16,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -38,11 +39,12 @@ import java.util.Set;
 @Validator(validators = ProductValidator.class)
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "product")
+@EqualsAndHashCode(callSuper = true)
 public class Product extends AbstractEntity {
 
     @Id
     @Column(name = "ID", nullable = false, unique = true, columnDefinition = "varchar(10)")
-    private Object id;
+    private String id;
 
     @Column(name = "NAME", unique = true, nullable = false, length = 100)
     private String name;
@@ -80,6 +82,6 @@ public class Product extends AbstractEntity {
         if (!(id instanceof String)) {
             throw new PersistenceException("Id of product must be string");
         }
-        this.id = id;
+        this.id = (String) id;
     }
 }

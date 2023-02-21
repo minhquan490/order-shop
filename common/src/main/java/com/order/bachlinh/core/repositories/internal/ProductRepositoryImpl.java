@@ -10,8 +10,10 @@ import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,8 +30,9 @@ import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @Repository
 @Primary
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 class ProductRepositoryImpl extends AbstractRepository<Product, String> implements ProductRepository {
-    private static final String LIKE_PATTERN = "%{0}%";
+    private static final String LIKE_PATTERN = "{0}%";
 
     @Autowired
     ProductRepositoryImpl(ApplicationContext applicationContext) {

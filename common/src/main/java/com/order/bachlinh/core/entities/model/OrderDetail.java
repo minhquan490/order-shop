@@ -12,8 +12,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,12 +26,13 @@ import lombok.Setter;
 @Entity
 @Table(name = "ORDER_DETAIL", indexes = @Index(name = "idx_order", columnList = "ORDER_ID"))
 @Validator(validators = OrderDetailValidator.class)
+@EqualsAndHashCode(callSuper = true)
 public class OrderDetail extends AbstractEntity {
 
     @Id
     @Column(name = "ID", nullable = false, unique = true, columnDefinition = "int")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Object id;
+    private Integer id;
 
     @Column(name = "AMOUNT", nullable = false)
     private int amount;
@@ -42,4 +45,12 @@ public class OrderDetail extends AbstractEntity {
     @JoinColumn(name = "ORDER_ID", nullable = false)
     @JsonIgnore
     private Order order;
+
+    @Override
+    public void setId(Object id) {
+        if (!(id instanceof Integer)) {
+            throw new PersistenceException("Id of OrderDetail must be int");
+        }
+        this.id = (Integer) id;
+    }
 }

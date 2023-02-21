@@ -1,6 +1,7 @@
 package com.order.bachlinh.core.configuration;
 
 import com.order.bachlinh.core.entities.model.BaseEntity;
+import com.order.bachlinh.core.entities.spi.ApplicationAvailableSettings;
 import com.order.bachlinh.core.entities.spi.EntityFactory;
 import com.order.bachlinh.core.entities.spi.HibernateL2CachingRegionFactory;
 import com.order.bachlinh.core.entities.spi.internal.EntityFactoryBuilderProvider;
@@ -10,16 +11,18 @@ import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.dialect.MySQLDialect;
 import org.hibernate.dialect.SQLServerDialect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
@@ -41,6 +44,7 @@ import java.util.Properties;
 @Configuration
 @EnableJpaAuditing(auditorAwareRef = "auditorProvider")
 @EnableTransactionManagement(proxyTargetClass = true, mode = AdviceMode.ASPECTJ)
+@PropertySource(value = "classpath:common.properties")
 class DataSourceConfiguration {
     private String databaseAddress;
     private String databaseName;
@@ -75,6 +79,7 @@ class DataSourceConfiguration {
 
     @Bean
     @Primary
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public EntityManager entityManager() {
         EntityManagerFactory entityManagerFactory = applicationContext.getBean(EntityManagerFactory.class);
         return entityManagerFactory.createEntityManager();
@@ -112,13 +117,13 @@ class DataSourceConfiguration {
 
     private Properties hibernateProperties() {
         Properties hibernateProperties = new Properties();
-        hibernateProperties.setProperty(AvailableSettings.HBM2DDL_AUTO, "update");
-        hibernateProperties.setProperty(AvailableSettings.SHOW_SQL, "true");
-        hibernateProperties.setProperty(AvailableSettings.FORMAT_SQL, "true");
-        hibernateProperties.setProperty(AvailableSettings.CURRENT_SESSION_CONTEXT_CLASS, "thread");
-        hibernateProperties.setProperty(AvailableSettings.DIALECT, sqlDialect(useDatabase));
-        hibernateProperties.setProperty(AvailableSettings.USE_SECOND_LEVEL_CACHE, "true");
-        hibernateProperties.setProperty(AvailableSettings.USE_QUERY_CACHE, "true");
+        hibernateProperties.setProperty(ApplicationAvailableSettings.HBM2DDL_AUTO, "update");
+        hibernateProperties.setProperty(ApplicationAvailableSettings.SHOW_SQL, "true");
+        hibernateProperties.setProperty(ApplicationAvailableSettings.FORMAT_SQL, "true");
+        hibernateProperties.setProperty(ApplicationAvailableSettings.CURRENT_SESSION_CONTEXT_CLASS, "thread");
+        hibernateProperties.setProperty(ApplicationAvailableSettings.DIALECT, sqlDialect(useDatabase));
+        hibernateProperties.setProperty(ApplicationAvailableSettings.USE_SECOND_LEVEL_CACHE, "true");
+        hibernateProperties.setProperty(ApplicationAvailableSettings.USE_QUERY_CACHE, "true");
         return hibernateProperties;
     }
 

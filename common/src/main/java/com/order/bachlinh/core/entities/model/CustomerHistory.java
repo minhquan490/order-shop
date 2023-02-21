@@ -9,6 +9,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,13 +20,16 @@ import java.sql.Date;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Entity
-@Table(name = "CUSTOMER_HISTORY", indexes = @Index(name = "idx_history_customer", columnList = "CUSTOMER_HISTORY_ID"))
+@Table(
+        name = "CUSTOMER_HISTORY",
+        indexes = @Index(name = "idx_history_customer", columnList = "CUSTOMER_HISTORY_ID"))
+@EqualsAndHashCode(callSuper = true)
 public class CustomerHistory extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID", unique = true, nullable = false, columnDefinition = "int")
-    private Object id;
+    private Integer id;
 
     @Column(name = "PATH_REQUEST", length = 50)
     private String pathRequest;
@@ -48,7 +52,7 @@ public class CustomerHistory extends AbstractEntity {
         if (!(id instanceof Integer)) {
             throw new PersistenceException("Id of history must be int");
         }
-        this.id = id;
+        this.id = (Integer) id;
     }
 
     public void setRequestType(String requestType) {

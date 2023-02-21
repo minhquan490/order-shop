@@ -15,6 +15,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -44,11 +45,12 @@ import java.util.Set;
 @Validator(validators = CustomerValidator.class)
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "customer")
+@EqualsAndHashCode(callSuper = true)
 public class Customer extends AbstractEntity implements UserDetails {
 
     @Id
     @Column(name = "ID", unique = true, nullable = false, columnDefinition = "varchar(10)")
-    private Object id;
+    private String id;
 
     @Column(name = "USER_NAME", unique = true, nullable = false, length = 24)
     private String username;

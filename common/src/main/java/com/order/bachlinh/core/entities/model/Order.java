@@ -16,6 +16,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,11 +37,12 @@ import static jakarta.persistence.FetchType.LAZY;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "order")
 @Label("ODR-")
 @Validator(validators = OrderValidator.class)
+@EqualsAndHashCode(callSuper = true)
 public class Order extends AbstractEntity {
 
     @Id
     @Column(name = "ID", unique = true, nullable = false, columnDefinition = "varchar(10)")
-    private Object id;
+    private String id;
 
     @Column(name = "DEPOSITED", nullable = false, columnDefinition = "bit")
     private boolean deposited;
@@ -67,6 +69,6 @@ public class Order extends AbstractEntity {
         if (!(id instanceof String)) {
             throw new PersistenceException("Id of order must be string");
         }
-        this.id = id;
+        this.id = (String) id;
     }
 }
