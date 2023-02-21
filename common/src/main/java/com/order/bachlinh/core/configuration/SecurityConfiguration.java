@@ -1,0 +1,158 @@
+package com.order.bachlinh.core.configuration;
+
+import com.order.bachlinh.core.entities.model.Role;
+import com.order.bachlinh.core.security.entry.AccessDeniedEntryPoint;
+import com.order.bachlinh.core.security.filter.AuthenticationFilter;
+import com.order.bachlinh.core.security.filter.ClientSecretFilter;
+import com.order.bachlinh.core.security.filter.LoggingRequestFilter;
+import com.order.bachlinh.core.security.handler.ClientSecretHandler;
+import com.order.bachlinh.core.security.token.internal.TokenManagerProvider;
+import com.order.bachlinh.core.security.token.spi.JwtDecoderFactory;
+import com.order.bachlinh.core.security.token.spi.TokenManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AdviceMode;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Collections;
+
+/**
+ * Internal security configuration use in this project.
+ *
+ * @author Hoang Minh Quan
+ * */
+@Configuration
+@EnableWebSecurity
+@EnableMethodSecurity(proxyTargetClass = true, mode = AdviceMode.ASPECTJ)
+class SecurityConfiguration {
+    private String urlContentBase;
+    private String urlCustomer;
+    private String urlAdmin;
+    private String clientUrl;
+    private String secretKey;
+
+    private ApplicationContext applicationContext;
+
+    @Bean
+    AuthenticationFilter authenticationFilter() {
+        return new AuthenticationFilter(applicationContext);
+    }
+
+    @Bean
+    LoggingRequestFilter loggingRequestFilter() {
+        return new LoggingRequestFilter(applicationContext, clientUrl);
+    }
+
+    @Bean
+    ClientSecretFilter clientSecretFilter() {
+        return new ClientSecretFilter(applicationContext, clientUrl);
+    }
+
+    @Bean
+    DefaultSecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf(csrf -> {
+                    csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+                    csrf.ignoringRequestMatchers("/login", "/register", "/home");
+                })
+                .cors(cors -> cors.configurationSource(corsConfigurationSource(clientUrl)))
+                .anonymous()
+                .disable()
+                .formLogin()
+                .disable()
+                .logout()
+                .disable()
+                .httpBasic()
+                .disable()
+                .headers()
+                .cacheControl()
+                .disable()
+                .and()
+                .requiresChannel()
+                .anyRequest()
+                .requiresSecure()
+                .and()
+                .authorizeHttpRequests()
+                .requestMatchers(urlAdmin).hasAuthority(Role.ADMIN.name())
+                .requestMatchers(urlCustomer).hasAnyAuthority(Role.ADMIN.name(), Role.CUSTOMER.name())
+                .requestMatchers(urlContentBase, "/login", "/register", "/home").permitAll()
+                .and()
+                .addFilterBefore(loggingRequestFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAt(authenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(clientSecretFilter(), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling()
+                .accessDeniedHandler(new AccessDeniedEntryPoint())
+                .and()
+                .build();
+    }
+
+    @Bean
+    TokenManager tokenManager() {
+        return new TokenManagerProvider(JwtDecoderFactory.Builder.SHA256_ALGORITHM, secretKey, applicationContext)
+                .getTokenManager();
+    }
+
+    @Bean
+    BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(20);
+    }
+
+    @Bean
+    ClientSecretHandler clientSecretHandler() {
+        return new ClientSecretHandler();
+    }
+
+    private CorsConfigurationSource corsConfigurationSource(String clientUrl) {
+        UrlBasedCorsConfigurationSource corsConfigurationSource = new UrlBasedCorsConfigurationSource();
+
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedHeader("*");
+        configuration.setAllowedMethods(Collections.singletonList("*"));
+        configuration.addAllowedOrigin(clientUrl);
+
+        corsConfigurationSource.registerCorsConfiguration("/**", configuration);
+        return corsConfigurationSource;
+    }
+
+    @Autowired
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
+    @Value("${secret.key}")
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    @Value("${shop.client.url}")
+    public void setClientUrl(String clientUrl) {
+        this.clientUrl = clientUrl;
+    }
+
+    @Value("${shop.url.base}")
+    public void setUrlContentBase(String urlContentBase) {
+        this.urlContentBase = urlContentBase;
+    }
+
+    @Value("${shop.url.customer}")
+    public void setUrlCustomer(String urlCustomer) {
+        this.urlCustomer = urlCustomer;
+    }
+
+    @Value("${shop.url.admin}")
+    public void setUrlAdmin(String urlAdmin) {
+        this.urlAdmin = urlAdmin;
+    }
+}

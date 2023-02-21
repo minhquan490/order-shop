@@ -1,0 +1,84 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+    id 'org.graalvm.buildtools.native'
+}
+
+
+group = 'com.order.bachlinh'
+version = '0.0.1-SNAPSHOT'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.boot:spring-boot-starter-undertow'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.security:spring-security-aspects'
+    implementation 'com.microsoft.sqlserver:mssql-jdbc'
+    implementation project(":common")
+
+    implementation 'javax.cache:cache-api'
+    implementation 'org.ehcache:ehcache:3.10.8'
+    implementation 'com.codeborne:phantomjsdriver:1.5.0'
+    implementation 'org.seleniumhq.selenium:selenium-java:4.8.0'
+    implementation 'org.hibernate.orm:hibernate-jcache:6.1.6.Final'
+    implementation 'com.lmax:disruptor:3.4.4'
+    implementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
+
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    modules {
+        module("org.springframework.boot:spring-boot-starter-tomcat") {
+            replacedBy("org.springframework.boot:spring-boot-starter-undertow", "Use Undertow instead of Tomcat")
+        }
+        module("org.springframework.boot:spring-boot-starter-logging") {
+            replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of logging")
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+bootBuildImage {
+    builder = "paketobuildpacks/builder:tiny"
+    environment = ["BP_NATIVE_IMAGE": "true", "BP_GRADLE_BUILT_ARTIFACT": "build/libs/web-0.0.1-SNAPSHOT-plain.jar"]
+    buildpacks = ["gcr.io/paketo-buildpacks/graalvm", "gcr.io/paketo-buildpacks/java-native-image"]
+}
+
+graalvmNative {
+    testSupport = false
+}
+
+compileJava {
+    options.fork = true
+    options.forkOptions.with {
+        memoryMaximumSize = '4096m'
+        memoryInitialSize = '512m'
+        jvmArgs += '-XX:+UseG1GC'
+    }
+}
