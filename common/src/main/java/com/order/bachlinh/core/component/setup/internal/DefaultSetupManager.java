@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Log4j2
 class DefaultSetupManager implements SetupManager {
@@ -34,20 +35,40 @@ class DefaultSetupManager implements SetupManager {
 
     @Override
     public Collection<Setup> loadSetup() throws ClassNotFoundException {
+        // Process for special setup
+        AtomicReference<AbstractSetup> provinceSetup = new AtomicReference<>();
+        AtomicReference<AbstractSetup> districtSetup = new AtomicReference<>();
+        AtomicReference<AbstractSetup> wardSetup = new AtomicReference<>();
         if (setups.isEmpty()) {
             SpringObjenesis springObjenesis = new SpringObjenesis();
             scan().forEach(setupClass -> {
                 try {
-                    log.info("Init setup for [{}]", setupClass.getName());
+                    String className = setupClass.getName();
+                    log.info("Init setup for [{}]", className);
                     AbstractSetup setup = (AbstractSetup) springObjenesis.newInstance(setupClass);
                     setup.setApplicationContext(applicationContext);
+                    if (className.equals("com.order.bachlinh.core.component.setup.provide.DistrictSetup")) {
+                        districtSetup.set(setup);
+                    }
+                    if (className.equals("com.order.bachlinh.core.component.setup.provide.ProvinceSetup")) {
+                        provinceSetup.set(setup);
+                    }
+                    if (className.equals("com.order.bachlinh.core.component.setup.provide.WardSetup")) {
+                        wardSetup.set(setup);
+                    }
                     setups.add(setup);
                     log.info("Init complete");
                 } catch (Exception e) {
-                    throw new IllegalArgumentException("Can not instance [" + setupClass.getSimpleName() + "]", e);
+                    throw new IllegalArgumentException("Can not instance [" + setupClass.getName() + "]", e);
                 }
             });
         }
+        setups.remove(provinceSetup.get());
+        setups.remove(districtSetup.get());
+        setups.remove(wardSetup.get());
+        setups.add(provinceSetup.get());
+        setups.add(districtSetup.get());
+        setups.add(wardSetup.get());
         return setups;
     }
 

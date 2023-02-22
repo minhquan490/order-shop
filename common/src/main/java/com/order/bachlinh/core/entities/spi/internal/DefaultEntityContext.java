@@ -14,6 +14,7 @@ import org.springframework.objenesis.instantiator.util.UnsafeUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Log4j2
@@ -24,6 +25,7 @@ class DefaultEntityContext implements EntityContext {
     private final String cacheRegion;
     private final List<EntityValidator> validators;
     private int previousId;
+    private int createIdTime = 0;
 
     DefaultEntityContext(Class<?> entity, ApplicationContext context) {
         try {
@@ -72,18 +74,20 @@ class DefaultEntityContext implements EntityContext {
     @Override
     public Object getNextId() {
         this.previousId += 1;
+        this.createIdTime += 1;
         return prefix + String.format("%06d", previousId);
     }
 
     @Override
     public void rollback() {
-        this.previousId -= 1;
+        this.previousId -= createIdTime;
+        this.createIdTime = 0;
     }
 
     private List<EntityValidator> getValidators(Class<?> entity, ApplicationContext context) {
         Validator v = entity.getAnnotation(Validator.class);
         if (v == null) {
-            return null;
+            return Collections.emptyList();
         }
         List<EntityValidator> vs = new ArrayList<>();
         try {

@@ -33,7 +33,9 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.MultiValueMapAdapter;
 
+import java.util.Collections;
 import java.util.Map;
 
 class DefaultRestTemplateFactory implements RestTemplateFactory {
@@ -166,7 +168,7 @@ class DefaultRestTemplateFactory implements RestTemplateFactory {
         }
 
         private JsonNode request(String url, HttpMethod method, Object body, MultiValueMap<String, String> headers, Map<String, ?> uriVariables) throws JsonProcessingException {
-            HttpHeaders httpHeaders = new HttpHeaders(headers);
+            HttpHeaders httpHeaders = new HttpHeaders(headers == null ? new MultiValueMapAdapter<>(Collections.emptyMap()) : headers);
             HttpEntity<?> httpEntity = new HttpEntity<>(body, httpHeaders);
             ResponseEntity<String> response = internalTemplate.exchange(url, method, httpEntity, String.class, uriVariables);
             return jsonConverter.readTree(response.getBody());

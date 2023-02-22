@@ -50,6 +50,9 @@ public class Ward extends AbstractEntity {
     @Column(name = "CODE_NAME", length = 50)
     private String codeName;
 
+    @Column(name = "DIVISION_TYPE", length = 50)
+    private String divisionType;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DISTRICT_ID", nullable = false, unique = true)
     private District district;

@@ -41,7 +41,7 @@ public class ValidateInterceptor {
     public void validate(JoinPoint joinPoint) {
         BaseEntity entity = findEntity(joinPoint);
         Collection<EntityValidator> validators = entityFactory.getEntityContext(entity.getClass()).getValidators();
-        if (validators == null) {
+        if (validators.isEmpty()) {
             return;
         }
         doValidate(validators, entity);
