@@ -12,6 +12,7 @@ import com.order.bachlinh.core.exception.CriticalException;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Map;
 
@@ -76,7 +77,13 @@ class SingularStoreImplementer implements SingularStore {
 
     private void createStoreFile(StoreDescriptor storeDescriptor) throws IOException {
         FileCreator creator = new FileCreator();
-        creator.createFile(storeDescriptor.getFileStorePath(), storeDescriptor.getName(), "", "{}");
+        String name = storeDescriptor.getName();
+        if (name.endsWith(".json")) {
+            String repairName = MessageFormat.format("{0}-{1}.json", name.split(".json")[0], "store");
+            creator.createFile(storeDescriptor.getFileStorePath(), repairName, "", "{}");
+        } else {
+            creator.createFile(storeDescriptor.getFileStorePath(), name.concat("-store"), ".json", "{}");
+        }
     }
 }
 

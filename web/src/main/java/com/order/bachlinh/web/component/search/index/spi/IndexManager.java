@@ -20,7 +20,7 @@ public interface IndexManager {
 
     String findPreviousKeywordExtract(String keyword);
 
-    void createIndex(String keyword, long indexOfKeyword);
+    void updateIndex(String keyword);
 
     void removeIndex(String keyword);
 
