@@ -1,7 +1,7 @@
 package com.order.bachlinh.web.controller.rest;
 
-import com.order.bachlinh.web.dto.form.RegisterForm;
-import com.order.bachlinh.web.dto.resp.RegisterDto;
+import com.order.bachlinh.web.component.dto.form.RegisterForm;
+import com.order.bachlinh.web.component.dto.resp.RegisterDto;
 import com.order.bachlinh.web.services.spi.common.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

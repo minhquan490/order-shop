@@ -1,8 +1,8 @@
 package com.order.bachlinh.web.controller.rest;
 
 import com.order.bachlinh.core.util.HeaderUtils;
-import com.order.bachlinh.web.dto.form.LoginForm;
-import com.order.bachlinh.web.dto.resp.LoginDto;
+import com.order.bachlinh.web.component.dto.form.LoginForm;
+import com.order.bachlinh.web.component.dto.resp.LoginDto;
 import com.order.bachlinh.web.services.spi.common.CustomerService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

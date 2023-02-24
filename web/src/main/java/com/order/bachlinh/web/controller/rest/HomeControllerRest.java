@@ -1,6 +1,6 @@
 package com.order.bachlinh.web.controller.rest;
 
-import com.order.bachlinh.web.dto.resp.ProductDto;
+import com.order.bachlinh.web.component.dto.resp.ProductDto;
 import com.order.bachlinh.web.services.spi.common.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

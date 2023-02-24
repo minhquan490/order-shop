@@ -1,7 +1,7 @@
 package com.order.bachlinh.web.services.spi.common;
 
-import com.order.bachlinh.web.dto.form.CategoryForm;
-import com.order.bachlinh.web.dto.resp.CategoryDto;
+import com.order.bachlinh.web.component.dto.form.CategoryForm;
+import com.order.bachlinh.web.component.dto.resp.CategoryDto;
 
 import java.util.List;
 

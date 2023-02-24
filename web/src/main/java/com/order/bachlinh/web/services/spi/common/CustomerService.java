@@ -1,10 +1,10 @@
 package com.order.bachlinh.web.services.spi.common;
 
 import com.order.bachlinh.core.entities.model.Customer;
-import com.order.bachlinh.web.dto.form.LoginForm;
-import com.order.bachlinh.web.dto.form.RegisterForm;
-import com.order.bachlinh.web.dto.resp.LoginDto;
-import com.order.bachlinh.web.dto.resp.RegisterDto;
+import com.order.bachlinh.web.component.dto.form.LoginForm;
+import com.order.bachlinh.web.component.dto.form.RegisterForm;
+import com.order.bachlinh.web.component.dto.resp.LoginDto;
+import com.order.bachlinh.web.component.dto.resp.RegisterDto;
 
 public interface CustomerService {
 

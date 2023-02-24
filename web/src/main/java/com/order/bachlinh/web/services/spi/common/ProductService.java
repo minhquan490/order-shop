@@ -1,8 +1,8 @@
 package com.order.bachlinh.web.services.spi.common;
 
-import com.order.bachlinh.web.dto.form.ProductForm;
-import com.order.bachlinh.web.dto.form.ProductSearchForm;
-import com.order.bachlinh.web.dto.resp.ProductDto;
+import com.order.bachlinh.web.component.dto.form.ProductForm;
+import com.order.bachlinh.web.component.dto.form.ProductSearchForm;
+import com.order.bachlinh.web.component.dto.resp.ProductDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

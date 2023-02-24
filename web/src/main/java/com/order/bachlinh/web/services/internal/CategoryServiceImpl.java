@@ -2,8 +2,8 @@ package com.order.bachlinh.web.services.internal;
 
 import com.order.bachlinh.core.entities.model.Category;
 import com.order.bachlinh.core.entities.spi.EntityFactory;
-import com.order.bachlinh.web.dto.form.CategoryForm;
-import com.order.bachlinh.web.dto.resp.CategoryDto;
+import com.order.bachlinh.web.component.dto.form.CategoryForm;
+import com.order.bachlinh.web.component.dto.resp.CategoryDto;
 import com.order.bachlinh.web.repositories.spi.CategoryRepository;
 import com.order.bachlinh.web.services.spi.common.CategoryService;
 import lombok.RequiredArgsConstructor;
