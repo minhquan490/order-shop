@@ -44,9 +44,15 @@ class DefaultStoreContext implements StoreContext {
 
     @Override
     public boolean removeStore(StoreDescriptor storeDescriptor) {
-        String storePath = storeDescriptor.getFileStorePath();
-        String storeName = storePath.split("/")[storePath.lastIndexOf("/")];
-        stores.remove(storeName);
-        return storeDestroyer.destroy(storeDescriptor, FileStoreType.JSON);
+        stores.remove(storeDescriptor.getName().split(getExtension(storeDescriptor.getFileStoreType()))[0]);
+        return storeDestroyer.destroy(storeDescriptor);
+    }
+
+    private String getExtension(FileStoreType type) {
+        return switch (type) {
+            case JSON -> ".json";
+            case XML -> ".xml";
+            case DATABASE -> throw new UnsupportedOperationException("Database is not supported");
+        };
     }
 }

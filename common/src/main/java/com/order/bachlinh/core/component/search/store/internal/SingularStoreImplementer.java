@@ -6,26 +6,32 @@ import com.order.bachlinh.core.component.search.store.spi.SingularStore;
 import com.order.bachlinh.core.component.search.store.spi.StoreDescriptor;
 import com.order.bachlinh.core.component.search.store.spi.StoreReader;
 import com.order.bachlinh.core.component.search.store.spi.StoreWriter;
+import com.order.bachlinh.core.component.search.utils.FileCreator;
 import com.order.bachlinh.core.entities.model.BaseEntity;
+import com.order.bachlinh.core.exception.CriticalException;
 import lombok.extern.log4j.Log4j2;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
 @Log4j2
 class SingularStoreImplementer implements SingularStore {
     private final Class<? extends BaseEntity> forEntity;
-    private final String name;
     private final StoreDescriptor storeDescriptor;
     private final StoreReader storeReader;
     private final StoreWriter storeWriter;
 
     SingularStoreImplementer(String name, String fileStorePath, Class<? extends BaseEntity> forEntity, IndexManager indexManager) {
-        this.name = name;
-        this.storeDescriptor = new DefaultStoreDescriptor(true, FileStoreType.JSON, fileStorePath + "/" + name);
+        this.storeDescriptor = new DefaultStoreDescriptor(true, FileStoreType.JSON, fileStorePath, name);
         this.storeWriter = buildStoreWriter(storeDescriptor, indexManager);
         this.storeReader = buildStoreReader(storeDescriptor, indexManager);
         this.forEntity = forEntity;
+        try {
+            createStoreFile(storeDescriptor);
+        } catch (IOException e) {
+            throw new CriticalException("Can not create store " + name, e);
+        }
     }
 
     @Override
@@ -35,7 +41,7 @@ class SingularStoreImplementer implements SingularStore {
 
     @Override
     public String getName() {
-        return name;
+        return storeDescriptor.getName();
     }
 
     @Override
@@ -66,6 +72,11 @@ class SingularStoreImplementer implements SingularStore {
             case XML -> throw new UnsupportedOperationException("XML file is not supported");
             case DATABASE -> throw new UnsupportedOperationException("Database is not supported");
         };
+    }
+
+    private void createStoreFile(StoreDescriptor storeDescriptor) throws IOException {
+        FileCreator creator = new FileCreator();
+        creator.createFile(storeDescriptor.getFileStorePath(), storeDescriptor.getName(), "", "{}");
     }
 }
 

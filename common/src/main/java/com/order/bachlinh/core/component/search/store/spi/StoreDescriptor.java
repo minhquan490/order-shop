@@ -5,4 +5,5 @@ public interface StoreDescriptor {
     boolean isSingular();
     FileStoreType getFileStoreType();
     String getFileStorePath();
+    String getName();
 }

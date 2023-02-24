@@ -16,7 +16,7 @@ class CombinedStoreImplementer implements CombinedStore {
 
     CombinedStoreImplementer(List<MultiValueMap<Class<? extends BaseEntity>, String>> values) {
         this.values = values;
-        this.storeDescriptor = new DefaultStoreDescriptor(false, FileStoreType.JSON, "");
+        this.storeDescriptor = new DefaultStoreDescriptor(false, FileStoreType.JSON, "", "");
     }
 
     @Override
