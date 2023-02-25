@@ -1,13 +1,12 @@
 package com.order.bachlinh.web.component.search.store.internal;
 
-import com.order.bachlinh.web.component.search.index.spi.IndexManager;
+import com.order.bachlinh.core.entities.model.BaseEntity;
 import com.order.bachlinh.web.component.search.store.spi.FileStoreType;
 import com.order.bachlinh.web.component.search.store.spi.SingularStore;
 import com.order.bachlinh.web.component.search.store.spi.StoreContext;
 import com.order.bachlinh.web.component.search.store.spi.StoreCreator;
 import com.order.bachlinh.web.component.search.store.spi.StoreDescriptor;
 import com.order.bachlinh.web.component.search.store.spi.StoreDestroyer;
-import com.order.bachlinh.core.entities.model.BaseEntity;
 
 import java.io.IOException;
 import java.util.Map;
@@ -31,13 +30,12 @@ class DefaultStoreContext implements StoreContext {
     @Override
     public SingularStore addStore(String name,
                             String fileStorePath,
-                            Class<? extends BaseEntity> forEntity,
-                            IndexManager indexManager) throws IOException {
+                            Class<? extends BaseEntity> forEntity) throws IOException {
         SingularStore store = getStore(name);
         if (store != null) {
             return store;
         }
-        store = storeCreator.createStore(name, fileStorePath, forEntity, indexManager);
+        store = storeCreator.createStore(name, fileStorePath, forEntity);
         stores.put(name, store);
         return store;
     }

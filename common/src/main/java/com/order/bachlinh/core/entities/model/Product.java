@@ -2,6 +2,7 @@ package com.order.bachlinh.core.entities.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.order.bachlinh.core.annotation.Label;
+import com.order.bachlinh.core.annotation.Store;
 import com.order.bachlinh.core.annotation.Validator;
 import com.order.bachlinh.core.entities.spi.validator.ProductValidator;
 import jakarta.persistence.Cacheable;
@@ -40,6 +41,7 @@ import java.util.Set;
 @Validator(validators = ProductValidator.class)
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "product")
+@Store(name = "product")
 public class Product extends AbstractEntity {
 
     @Id

@@ -28,7 +28,7 @@ class JsonStoreReader implements StoreReader {
             return Collections.emptyList();
         }
         long rootKeyIndex = indexManager.findIndex(keyword);
-        long nextKeyIndex = indexManager.findNextKeywordExtract(keyword);
+        long nextKeyIndex = indexManager.findNextKeyword(keyword);
         rootKeyIndex += keyword.getBytes(StandardCharsets.UTF_8).length + 3;
         nextKeyIndex -= 2;
         try {

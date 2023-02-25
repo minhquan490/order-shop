@@ -1,5 +1,6 @@
 package com.order.bachlinh.web.component.search.store.internal;
 
+import com.order.bachlinh.web.component.search.index.internal.IndexManagerFactoryBuilderProvider;
 import com.order.bachlinh.web.component.search.index.spi.IndexManager;
 import com.order.bachlinh.web.component.search.store.spi.FileStoreType;
 import com.order.bachlinh.web.component.search.store.spi.SingularStore;
@@ -18,18 +19,27 @@ import java.util.Map;
 
 @Log4j2
 class SingularStoreImplementer implements SingularStore {
+    private static final String JSON_EXTENSION = ".json";
     private final Class<? extends BaseEntity> forEntity;
     private final StoreDescriptor storeDescriptor;
     private final StoreReader storeReader;
     private final StoreWriter storeWriter;
+    private final IndexManager indexManager;
 
-    SingularStoreImplementer(String name, String fileStorePath, Class<? extends BaseEntity> forEntity, IndexManager indexManager) {
+    SingularStoreImplementer(String name, String fileStorePath, Class<? extends BaseEntity> forEntity) {
+        this.indexManager = IndexManagerFactoryBuilderProvider
+                .getFactoryBuilder()
+                .name(name)
+                .path(fileStorePath)
+                .build()
+                .getIndexManager();
         this.storeDescriptor = new DefaultStoreDescriptor(true, FileStoreType.JSON, fileStorePath, name);
         this.storeWriter = buildStoreWriter(storeDescriptor, indexManager);
         this.storeReader = buildStoreReader(storeDescriptor, indexManager);
         this.forEntity = forEntity;
         try {
             createStoreFile(storeDescriptor);
+            createIndexFile(storeDescriptor);
         } catch (IOException e) {
             throw new CriticalException("Can not create store " + name, e);
         }
@@ -55,6 +65,11 @@ class SingularStoreImplementer implements SingularStore {
         return storeWriter.write(value);
     }
 
+    @Override
+    public IndexManager getIndexManager() {
+        return indexManager;
+    }
+
     public Class<? extends BaseEntity> getForEntity() {
         return forEntity;
     }
@@ -78,11 +93,22 @@ class SingularStoreImplementer implements SingularStore {
     private void createStoreFile(StoreDescriptor storeDescriptor) throws IOException {
         FileCreator creator = new FileCreator();
         String name = storeDescriptor.getName();
-        if (name.endsWith(".json")) {
-            String repairName = MessageFormat.format("{0}-{1}.json", name.split(".json")[0], "store");
+        if (name.endsWith(JSON_EXTENSION)) {
+            String repairName = MessageFormat.format("{0}-{1}.json", name.split(JSON_EXTENSION)[0], "store");
             creator.createFile(storeDescriptor.getFileStorePath(), repairName, "", "{}");
         } else {
-            creator.createFile(storeDescriptor.getFileStorePath(), name.concat("-store"), ".json", "{}");
+            creator.createFile(storeDescriptor.getFileStorePath(), name.concat("-store"), JSON_EXTENSION, "{}");
+        }
+    }
+
+    private void createIndexFile(StoreDescriptor storeDescriptor) throws IOException {
+        FileCreator creator = new FileCreator();
+        String name = storeDescriptor.getName();
+        if (name.endsWith(JSON_EXTENSION)) {
+            String repairName = MessageFormat.format("{0}-{1}.json", name.split(JSON_EXTENSION)[0], "index");
+            creator.createFile(storeDescriptor.getFileStorePath(), repairName, "", "{}");
+        } else {
+            creator.createFile(storeDescriptor.getFileStorePath(), name.concat("-index"), JSON_EXTENSION, "{}");
         }
     }
 }

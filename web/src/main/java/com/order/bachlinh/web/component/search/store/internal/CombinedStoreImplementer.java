@@ -1,5 +1,6 @@
 package com.order.bachlinh.web.component.search.store.internal;
 
+import com.order.bachlinh.web.component.search.index.spi.IndexManager;
 import com.order.bachlinh.web.component.search.store.spi.CombinedStore;
 import com.order.bachlinh.web.component.search.store.spi.FileStoreType;
 import com.order.bachlinh.web.component.search.store.spi.StoreDescriptor;
@@ -38,5 +39,10 @@ class CombinedStoreImplementer implements CombinedStore {
     public boolean addValue(Map<String, String> value) {
         // Unsupported
         return false;
+    }
+
+    @Override
+    public IndexManager getIndexManager() {
+        return null;
     }
 }

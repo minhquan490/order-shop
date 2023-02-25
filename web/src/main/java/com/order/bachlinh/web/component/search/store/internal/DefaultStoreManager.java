@@ -1,13 +1,12 @@
 package com.order.bachlinh.web.component.search.store.internal;
 
-import com.order.bachlinh.web.component.search.index.spi.IndexManager;
+import com.order.bachlinh.core.entities.model.BaseEntity;
 import com.order.bachlinh.web.component.search.store.spi.CombinedStore;
 import com.order.bachlinh.web.component.search.store.spi.SingularStore;
 import com.order.bachlinh.web.component.search.store.spi.StoreCombiner;
 import com.order.bachlinh.web.component.search.store.spi.StoreContext;
 import com.order.bachlinh.web.component.search.store.spi.StoreDescriptor;
 import com.order.bachlinh.web.component.search.store.spi.StoreManager;
-import com.order.bachlinh.core.entities.model.BaseEntity;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -17,12 +16,10 @@ import java.util.Map;
 class DefaultStoreManager implements StoreManager {
     private final StoreContext context;
     private final StoreCombiner storeCombiner;
-    private final IndexManager indexManager;
 
-    DefaultStoreManager(IndexManager indexManager) {
+    DefaultStoreManager() {
         this.context = new DefaultStoreContext();
         this.storeCombiner = new DefaultStoreCombiner();
-        this.indexManager = indexManager;
     }
 
     @Override
@@ -47,7 +44,7 @@ class DefaultStoreManager implements StoreManager {
 
     @Override
     public SingularStore createStore(String name, String fileStorePath, Class<? extends BaseEntity> forEntity) throws IOException {
-        return context.addStore(name, fileStorePath, forEntity, indexManager);
+        return context.addStore(name, fileStorePath, forEntity);
     }
 
     @Override
