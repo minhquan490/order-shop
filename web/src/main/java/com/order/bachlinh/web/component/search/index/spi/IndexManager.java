@@ -12,19 +12,15 @@ public interface IndexManager {
      * @param rootKeyword root key for find.
      * @return next keyword before sort (sorted with position).
      * */
-    String findNextKeywordExtract(String rootKeyword);
+    long findNextKeywordExtract(String rootKeyword);
 
-    String findNextKeyword(String rootKeyword);
+    long findNextKeyword(String rootKeyword);
 
-    String findPreviousKeyword(String rootKeyword);
+    long findPreviousKeyword(String rootKeyword);
 
-    String findPreviousKeywordExtract(String keyword);
+    long findPreviousKeywordExtract(String keyword);
 
-    void updateIndex(String keyword);
-
-    void removeIndex(String keyword);
-
-    void removeIndex(long indexOfKeyword);
+    void updateIndex(String keyword, long position);
 
     void close();
 }

@@ -15,10 +15,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
+
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -26,7 +28,6 @@ import lombok.Setter;
 @Entity
 @Table(name = "ORDER_DETAIL", indexes = @Index(name = "idx_order", columnList = "ORDER_ID"))
 @Validator(validators = OrderDetailValidator.class)
-@EqualsAndHashCode(callSuper = true)
 public class OrderDetail extends AbstractEntity {
 
     @Id
@@ -52,5 +53,18 @@ public class OrderDetail extends AbstractEntity {
             throw new PersistenceException("Id of OrderDetail must be int");
         }
         this.id = (Integer) id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        OrderDetail that = (OrderDetail) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

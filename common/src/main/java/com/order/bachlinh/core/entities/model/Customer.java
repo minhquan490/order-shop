@@ -15,10 +15,10 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,6 +27,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -45,7 +46,6 @@ import java.util.Set;
 @Validator(validators = CustomerValidator.class)
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "customer")
-@EqualsAndHashCode(callSuper = true)
 public class Customer extends AbstractEntity implements UserDetails {
 
     @Id
@@ -112,5 +112,18 @@ public class Customer extends AbstractEntity implements UserDetails {
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(new SimpleGrantedAuthority(this.role));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Customer customer = (Customer) o;
+        return getId() != null && Objects.equals(getId(), customer.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

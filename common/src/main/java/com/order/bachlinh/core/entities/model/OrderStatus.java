@@ -11,10 +11,12 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
+
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -22,7 +24,6 @@ import lombok.Setter;
 @Table(name = "ORDER_STATUS")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Validator(validators = OrderStatusValidator.class)
-@EqualsAndHashCode(callSuper = true)
 public class OrderStatus extends AbstractEntity {
 
     @Id
@@ -42,5 +43,18 @@ public class OrderStatus extends AbstractEntity {
             throw new PersistenceException("Id of OrderStatus must be int");
         }
         this.id = (Integer) id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        OrderStatus that = (OrderStatus) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

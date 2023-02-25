@@ -9,12 +9,13 @@ import jakarta.persistence.Index;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 
 import java.sql.Date;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -23,7 +24,6 @@ import java.sql.Date;
 @Table(
         name = "CUSTOMER_HISTORY",
         indexes = @Index(name = "idx_history_customer", columnList = "CUSTOMER_HISTORY_ID"))
-@EqualsAndHashCode(callSuper = true)
 public class CustomerHistory extends AbstractEntity {
 
     @Id
@@ -58,5 +58,18 @@ public class CustomerHistory extends AbstractEntity {
     public void setRequestType(String requestType) {
         RequestType check = RequestType.valueOf(requestType);
         this.requestType = check.name();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        CustomerHistory that = (CustomerHistory) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

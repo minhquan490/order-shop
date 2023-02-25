@@ -12,10 +12,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
+
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -24,7 +26,6 @@ import lombok.Setter;
 @Table(name = "ADDRESS")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Validator(validators = AddressValidator.class)
-@EqualsAndHashCode(callSuper = true)
 public class Address extends AbstractEntity {
 
     @Id
@@ -55,5 +56,18 @@ public class Address extends AbstractEntity {
             throw new PersistenceException("Address entity must be string");
         }
         this.id = (String) id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Address address = (Address) o;
+        return getId() != null && Objects.equals(getId(), address.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

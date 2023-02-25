@@ -63,7 +63,7 @@ class JsonStoreWriter implements StoreWriter {
         try {
             String keywordBuilt = writableValue.toString();
             int result = fileWriter.write(keyWordIndex, keywordBuilt);
-            indexManager.updateIndex(keywordBuilt);
+            indexManager.updateIndex(keywordBuilt, result);
             return result;
         } catch (IOException e) {
             log.error("Write content failure because IOException", e);

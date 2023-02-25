@@ -18,13 +18,14 @@ import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -36,7 +37,6 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "category")
-@EqualsAndHashCode(callSuper = true)
 public class Category extends AbstractEntity {
 
     @Id
@@ -63,5 +63,18 @@ public class Category extends AbstractEntity {
             throw new PersistenceException("Id of category must be string");
         }
         this.id = (String) id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Category category = (Category) o;
+        return getId() != null && Objects.equals(getId(), category.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

@@ -15,16 +15,16 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.util.List;
+import java.util.Objects;
 
-@EqualsAndHashCode(callSuper = true)
 @Getter
 @Setter
 @Entity
@@ -70,5 +70,18 @@ public class District extends AbstractEntity {
             throw new PersistenceException("Id of district must be int");
         }
         this.id = (Integer) id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        District district = (District) o;
+        return getId() != null && Objects.equals(getId(), district.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

@@ -12,14 +12,15 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(
@@ -34,7 +35,6 @@ import java.util.List;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "province")
-@EqualsAndHashCode(callSuper = true)
 public class Province extends AbstractEntity {
 
     @Id
@@ -66,5 +66,18 @@ public class Province extends AbstractEntity {
             throw new PersistenceException("Id of province must be integer");
         }
         this.id = (Integer) id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Province province = (Province) o;
+        return getId() != null && Objects.equals(getId(), province.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

@@ -15,11 +15,12 @@ import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -28,7 +29,6 @@ import java.util.Set;
 @Table(name = "CART", indexes = @Index(name = "idx_cart_customer", columnList = "CUSTOMER_ID"))
 @Label("CRT-")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-@EqualsAndHashCode(callSuper = true)
 public class Cart extends AbstractEntity {
 
     @Id
@@ -56,5 +56,18 @@ public class Cart extends AbstractEntity {
             throw new PersistenceException("Id of cart must be string");
         }
         this.id = (String) id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Cart cart = (Cart) o;
+        return getId() != null && Objects.equals(getId(), cart.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

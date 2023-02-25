@@ -8,7 +8,6 @@ import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.sql.Timestamp;
-import java.util.Objects;
 
 @Setter
 @Getter
@@ -30,19 +29,6 @@ public abstract non-sealed class AbstractEntity implements BaseEntity {
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AbstractEntity that = (AbstractEntity) o;
-        return Objects.equals(this.getId(), that.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId());
     }
 
     @Override

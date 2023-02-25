@@ -25,9 +25,11 @@ public interface IndexLocator {
      * @return Position of the next keyword or negative number if not found.
      * */
     long locateNext(String keyword);
+    long locateExtract(String keyword);
 
     long locatePreviousExtract(String keyword);
 
     long locateNextExtract(String keyword);
     void clear();
+    void setKeywordPosition(long position);
 }

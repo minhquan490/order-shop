@@ -15,10 +15,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
+
+import java.util.Objects;
 
 @Entity
 @Table(name = "PRODUCT_MEDIA", indexes = @Index(name = "idx_product_media_product", columnList = "PRODUCT_ID"))
@@ -26,7 +28,6 @@ import lombok.Setter;
 @Setter
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Validator(validators = ProductPictureValidator.class)
-@EqualsAndHashCode(callSuper = true)
 public class ProductMedia extends AbstractEntity {
 
     @Id
@@ -48,5 +49,18 @@ public class ProductMedia extends AbstractEntity {
             throw new PersistenceException("Id of product picture must be int");
         }
         this.id = (Integer) id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        ProductMedia that = (ProductMedia) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

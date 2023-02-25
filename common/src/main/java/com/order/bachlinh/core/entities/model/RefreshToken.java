@@ -12,12 +12,13 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.PersistenceException;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 
 import java.sql.Timestamp;
+import java.util.Objects;
 
 @Entity
 @Table(name = "REFRESH_TOKEN", indexes = @Index(name = "idx_token_value", columnList = "VALUE"))
@@ -25,7 +26,6 @@ import java.sql.Timestamp;
 @Setter
 @Label("RFT-")
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
-@EqualsAndHashCode(callSuper = true)
 public class RefreshToken extends AbstractEntity {
 
     @Id
@@ -52,5 +52,18 @@ public class RefreshToken extends AbstractEntity {
             throw new PersistenceException("Id of refresh token is only string");
         }
         this.id = (String) id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        RefreshToken that = (RefreshToken) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }
