@@ -4,7 +4,7 @@ import com.order.bachlinh.core.entities.model.Category;
 import com.order.bachlinh.core.entities.model.Category_;
 import com.order.bachlinh.core.entities.spi.EntityFactory;
 import com.order.bachlinh.core.repositories.AbstractRepository;
-import com.order.bachlinh.core.repositories.spi.CategoryRepository;
+import com.order.bachlinh.core.repositories.CategoryRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.JoinType;
 import org.hibernate.SessionFactory;

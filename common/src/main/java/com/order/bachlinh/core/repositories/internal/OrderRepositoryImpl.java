@@ -4,7 +4,7 @@ import com.order.bachlinh.core.entities.model.Order;
 import com.order.bachlinh.core.entities.model.Order_;
 import com.order.bachlinh.core.entities.spi.EntityFactory;
 import com.order.bachlinh.core.repositories.AbstractRepository;
-import com.order.bachlinh.core.repositories.spi.OrderRepository;
+import com.order.bachlinh.core.repositories.OrderRepository;
 import jakarta.persistence.EntityManager;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;

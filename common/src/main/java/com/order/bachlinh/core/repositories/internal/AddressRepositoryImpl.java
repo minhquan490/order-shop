@@ -5,7 +5,7 @@ import com.order.bachlinh.core.entities.model.Address_;
 import com.order.bachlinh.core.entities.spi.EntityFactory;
 import com.order.bachlinh.core.repositories.CustomerRepository;
 import com.order.bachlinh.core.repositories.AbstractRepository;
-import com.order.bachlinh.core.repositories.spi.AddressRepository;
+import com.order.bachlinh.core.repositories.AddressRepository;
 import jakarta.persistence.EntityManager;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;

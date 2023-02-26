@@ -1,7 +1,6 @@
-package com.order.bachlinh.core.repositories.spi;
+package com.order.bachlinh.core.repositories;
 
 import com.order.bachlinh.core.entities.model.Address;
-import com.order.bachlinh.core.repositories.CustomerRepository;
 import org.springframework.data.jpa.repository.support.JpaRepositoryImplementation;
 
 public interface AddressRepository extends JpaRepositoryImplementation<Address, String> {

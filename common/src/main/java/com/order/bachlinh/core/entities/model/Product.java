@@ -12,7 +12,6 @@ import jakarta.persistence.Cacheable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.ManyToMany;
@@ -74,9 +73,9 @@ public class Product extends AbstractEntity {
     private boolean enabled = true;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "product", orphanRemoval = true)
-    private Set<ProductMedia> pictures;
+    private Set<ProductMedia> medias;
 
-    @ManyToMany(mappedBy = "products", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "products")
     private Set<Category> categories;
 
     @ManyToMany(mappedBy = "products")

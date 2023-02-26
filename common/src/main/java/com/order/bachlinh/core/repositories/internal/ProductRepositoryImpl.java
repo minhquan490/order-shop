@@ -32,7 +32,7 @@ import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 @Primary
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 class ProductRepositoryImpl extends AbstractRepository<Product, String> implements ProductRepository {
-    private static final String LIKE_PATTERN = "{0}%";
+    private static final String LIKE_PATTERN = "%{0}%";
 
     @Autowired
     ProductRepositoryImpl(ApplicationContext applicationContext) {
@@ -106,20 +106,12 @@ class ProductRepositoryImpl extends AbstractRepository<Product, String> implemen
             root.join(Product_.pictures, JoinType.LEFT);
             AtomicReference<Predicate> predicateWrapper = new AtomicReference<>();
             copyConditions.forEach((key, value) -> {
-                Predicate predicate;
-                if (key.equals(Product_.PRICE)) {
-                    predicate = criteriaBuilder.lessThanOrEqualTo(root.get(key), (int) value);
-                } else {
-                    if (key.equals(Product_.NAME)) {
-                        predicate = criteriaBuilder.like(root.get(Product_.NAME), MessageFormat.format(LIKE_PATTERN, value));
-                    } else {
-                        if (key.equals("IDS")) {
-                            predicate = criteriaBuilder.in(root.get(Product_.ID)).in(value);
-                        } else {
-                            predicate = criteriaBuilder.equal(root.get(key), value);
-                        }
-                    }
-                }
+                Predicate predicate = switch (key) {
+                    case Product_.PRICE -> criteriaBuilder.lessThanOrEqualTo(root.get(key), (int) value);
+                    case Product_.NAME -> criteriaBuilder.like(root.get(Product_.NAME), MessageFormat.format(LIKE_PATTERN, value));
+                    case "IDS" -> criteriaBuilder.in(root.get(Product_.ID)).in(value);
+                    default -> criteriaBuilder.equal(root.get(key), value);
+                };
                 predicateWrapper.set(criteriaBuilder.or(predicate));
             });
             return predicateWrapper.get();

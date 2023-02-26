@@ -4,7 +4,7 @@ import com.order.bachlinh.core.entities.model.Cart;
 import com.order.bachlinh.core.entities.model.Cart_;
 import com.order.bachlinh.core.entities.spi.EntityFactory;
 import com.order.bachlinh.core.repositories.AbstractRepository;
-import com.order.bachlinh.core.repositories.spi.CartRepository;
+import com.order.bachlinh.core.repositories.CartRepository;
 import jakarta.persistence.EntityManager;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;

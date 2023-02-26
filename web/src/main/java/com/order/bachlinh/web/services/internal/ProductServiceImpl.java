@@ -9,7 +9,7 @@ import com.order.bachlinh.web.component.dto.form.ProductForm;
 import com.order.bachlinh.web.component.dto.form.ProductSearchForm;
 import com.order.bachlinh.web.component.dto.resp.ProductDto;
 import com.order.bachlinh.core.component.search.SearchEngine;
-import com.order.bachlinh.core.repositories.spi.CategoryRepository;
+import com.order.bachlinh.core.repositories.CategoryRepository;
 import com.order.bachlinh.web.services.spi.business.ProductSearchingService;
 import com.order.bachlinh.web.services.spi.common.ProductService;
 import lombok.RequiredArgsConstructor;

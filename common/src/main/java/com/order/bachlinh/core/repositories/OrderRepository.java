@@ -1,4 +1,4 @@
-package com.order.bachlinh.core.repositories.spi;
+package com.order.bachlinh.core.repositories;
 
 import com.order.bachlinh.core.entities.model.Order;
 import org.springframework.data.jpa.repository.support.JpaRepositoryImplementation;
