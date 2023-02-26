@@ -26,6 +26,8 @@ public interface EntityContext extends IdContext {
      * */
     Collection<EntityValidator> getValidators();
 
+    Collection<EntityTrigger> getTrigger();
+
     /**
      * Return the cache region of entity
      *

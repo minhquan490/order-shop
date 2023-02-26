@@ -8,7 +8,9 @@ import com.order.bachlinh.core.repositories.ProductRepository;
 import com.order.bachlinh.web.component.dto.form.ProductForm;
 import com.order.bachlinh.web.component.dto.form.ProductSearchForm;
 import com.order.bachlinh.web.component.dto.resp.ProductDto;
-import com.order.bachlinh.web.repositories.spi.CategoryRepository;
+import com.order.bachlinh.core.component.search.SearchEngine;
+import com.order.bachlinh.core.repositories.spi.CategoryRepository;
+import com.order.bachlinh.web.services.spi.business.ProductSearchingService;
 import com.order.bachlinh.web.services.spi.common.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,10 +28,11 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-class ProductServiceImpl implements ProductService {
+class ProductServiceImpl implements ProductService, ProductSearchingService {
     private final ProductRepository productRepository;
     private final EntityFactory entityFactory;
     private final CategoryRepository categoryRepository;
+    private final SearchEngine searchEngine;
 
     @Override
     public ProductDto getProductByName(String productName) {
@@ -90,6 +94,27 @@ class ProductServiceImpl implements ProductService {
             List<Category> categories = Arrays.stream(form.categories()).map(categoryRepository::getCategoryByName).toList();
             conditions.put(Product_.CATEGORIES, categories);
         }
+        return productRepository.getProductsByCondition(conditions, pageable).map(ProductDto::toDto);
+    }
+
+    @Override
+    public Page<ProductDto> getProductsWithId(Collection<Object> ids) {
+        Pageable pageable = Pageable.ofSize(ids.size());
+        Map<String, Object> conditions = new HashMap<>();
+        conditions.put("IDS", ids);
+        return productRepository.getProductsByCondition(conditions, pageable).map(ProductDto::toDto);
+    }
+
+    @Override
+    public Page<ProductDto> search(ProductSearchForm form, Pageable pageable) {
+        return searchProduct(form, pageable);
+    }
+
+    @Override
+    public Page<ProductDto> fullTextSearch(ProductSearchForm form, Pageable pageable) {
+        Collection<String> productIds = searchEngine.searchIds(Product.class, form.productName());
+        Map<String, Object> conditions = new HashMap<>();
+        conditions.put("IDS", productIds);
         return productRepository.getProductsByCondition(conditions, pageable).map(ProductDto::toDto);
     }
 

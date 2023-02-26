@@ -16,6 +16,8 @@ public interface ProductRepository {
 
     boolean productNameExist(Product product);
 
+    long countProduct();
+
     Product getProductByCondition(Map<String, Object> conditions);
 
     Page<Product> getProductsByCondition(Map<String, Object> conditions, Pageable pageable);

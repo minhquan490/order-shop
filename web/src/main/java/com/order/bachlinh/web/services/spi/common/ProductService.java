@@ -6,6 +6,8 @@ import com.order.bachlinh.web.component.dto.resp.ProductDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Collection;
+
 public interface ProductService {
 
     ProductDto getProductByName(String productName);
@@ -21,4 +23,6 @@ public interface ProductService {
     Page<ProductDto> productList(Pageable pageable);
 
     Page<ProductDto> searchProduct(ProductSearchForm form, Pageable pageable);
+
+    Page<ProductDto> getProductsWithId(Collection<Object> ids);
 }

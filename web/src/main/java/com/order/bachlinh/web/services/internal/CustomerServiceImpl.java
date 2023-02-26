@@ -10,7 +10,7 @@ import com.order.bachlinh.web.component.dto.form.LoginForm;
 import com.order.bachlinh.web.component.dto.form.RegisterForm;
 import com.order.bachlinh.web.component.dto.resp.LoginDto;
 import com.order.bachlinh.web.component.dto.resp.RegisterDto;
-import com.order.bachlinh.web.repositories.spi.CartRepository;
+import com.order.bachlinh.core.repositories.spi.CartRepository;
 import com.order.bachlinh.web.services.spi.common.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -74,7 +74,7 @@ class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public boolean logout(Customer customer) {
-        customer = customerRepository.getCustomerById((String) customer.getId());
+        customer = customerRepository.getCustomerById(customer.getId());
         customer.setRefreshToken(null);
         return customerRepository.updateCustomer(customer) != null;
     }

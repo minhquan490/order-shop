@@ -1,16 +1,19 @@
 package com.order.bachlinh.core.entities.spi.internal;
 
 import com.order.bachlinh.core.annotation.Label;
+import com.order.bachlinh.core.annotation.Trigger;
 import com.order.bachlinh.core.annotation.Validator;
 import com.order.bachlinh.core.entities.model.AbstractEntity;
 import com.order.bachlinh.core.entities.model.BaseEntity;
 import com.order.bachlinh.core.entities.spi.EntityContext;
+import com.order.bachlinh.core.entities.spi.EntityTrigger;
 import com.order.bachlinh.core.entities.spi.EntityValidator;
+import com.order.bachlinh.core.entities.spi.TriggerMode;
 import jakarta.persistence.PersistenceException;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.annotations.Cache;
 import org.springframework.context.ApplicationContext;
-import org.springframework.objenesis.instantiator.util.UnsafeUtils;
+import org.springframework.objenesis.SpringObjenesis;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,14 +27,17 @@ class DefaultEntityContext implements EntityContext {
     private final String prefix;
     private final String cacheRegion;
     private final List<EntityValidator> validators;
+    private final List<EntityTrigger> triggers;
     private int previousId;
     private int createIdTime = 0;
 
     DefaultEntityContext(Class<?> entity, ApplicationContext context) {
+        SpringObjenesis springObjenesis = new SpringObjenesis();
         try {
             log.info("Init entity context for entity {}", entity.getSimpleName());
-            this.baseEntity = (BaseEntity) UnsafeUtils.getUnsafe().allocateInstance(entity);
+            this.baseEntity = (BaseEntity) springObjenesis.newInstance(entity);
             this.validators = getValidators(entity, context);
+            this.triggers = getTriggers(entity, context);
             this.previousId = 1;
             Label label = entity.getAnnotation(Label.class);
             if (label != null) {
@@ -67,6 +73,11 @@ class DefaultEntityContext implements EntityContext {
     }
 
     @Override
+    public Collection<EntityTrigger> getTrigger() {
+        return triggers;
+    }
+
+    @Override
     public String getCacheRegion() {
         return cacheRegion;
     }
@@ -98,5 +109,22 @@ class DefaultEntityContext implements EntityContext {
             // Ignore
         }
         return vs;
+    }
+
+    private List<EntityTrigger> getTriggers(Class<?> entity, ApplicationContext context) {
+        Trigger trigger = entity.getAnnotation(Trigger.class);
+        if (trigger == null) {
+            return Collections.emptyList();
+        }
+        List<EntityTrigger> entityTriggers = new ArrayList<>();
+        try {
+            for (Class<? extends EntityTrigger> t : trigger.triggers()) {
+                EntityTrigger triggerObject = t.getConstructor(ApplicationContext.class, TriggerMode.class).newInstance(context, trigger.mode());
+                entityTriggers.add(triggerObject);
+            }
+        } catch (Exception e) {
+            // Ignore
+        }
+        return entityTriggers;
     }
 }

@@ -68,6 +68,11 @@ class ProductRepositoryImpl extends AbstractRepository<Product, String> implemen
     }
 
     @Override
+    public long countProduct() {
+        return count();
+    }
+
+    @Override
     public Product getProductByCondition(Map<String, Object> conditions) {
         Specification<Product> spec = specWithCondition(conditions);
         return get(spec);
@@ -108,7 +113,11 @@ class ProductRepositoryImpl extends AbstractRepository<Product, String> implemen
                     if (key.equals(Product_.NAME)) {
                         predicate = criteriaBuilder.like(root.get(Product_.NAME), MessageFormat.format(LIKE_PATTERN, value));
                     } else {
-                        predicate = criteriaBuilder.equal(root.get(key), value);
+                        if (key.equals("IDS")) {
+                            predicate = criteriaBuilder.in(root.get(Product_.ID)).in(value);
+                        } else {
+                            predicate = criteriaBuilder.equal(root.get(key), value);
+                        }
                     }
                 }
                 predicateWrapper.set(criteriaBuilder.or(predicate));
