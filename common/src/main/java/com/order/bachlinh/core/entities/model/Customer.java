@@ -7,7 +7,6 @@ import jakarta.persistence.Cacheable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
@@ -91,10 +90,10 @@ public class Customer extends AbstractEntity implements UserDetails {
     @Column(name = "ENABLED", nullable = false, columnDefinition = "BIT")
     private boolean enabled = true;
 
-    @OneToOne(optional = false, mappedBy = "customer", fetch = FetchType.LAZY)
+    @OneToOne(optional = false, mappedBy = "customer")
     private Cart cart;
 
-    @OneToOne(optional = false, mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(optional = false, mappedBy = "customer", cascade = CascadeType.ALL)
     private RefreshToken refreshToken;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer", orphanRemoval = true)

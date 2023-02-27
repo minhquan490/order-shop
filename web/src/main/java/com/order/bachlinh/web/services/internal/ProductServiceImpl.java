@@ -7,7 +7,7 @@ import com.order.bachlinh.core.entities.spi.EntityFactory;
 import com.order.bachlinh.core.entities.repositories.ProductRepository;
 import com.order.bachlinh.web.component.dto.form.ProductForm;
 import com.order.bachlinh.web.component.dto.form.ProductSearchForm;
-import com.order.bachlinh.web.component.dto.resp.ProductDto;
+import com.order.bachlinh.web.component.dto.resp.ProductResp;
 import com.order.bachlinh.core.component.search.SearchEngine;
 import com.order.bachlinh.core.entities.repositories.CategoryRepository;
 import com.order.bachlinh.web.services.spi.business.ProductSearchingService;
@@ -35,30 +35,30 @@ class ProductServiceImpl implements ProductService, ProductSearchingService {
     private final SearchEngine searchEngine;
 
     @Override
-    public ProductDto getProductByName(String productName) {
+    public ProductResp getProductByName(String productName) {
         Map<String, Object> conditions = new HashMap<>();
         conditions.put(Product_.NAME, productName);
         Product product = productRepository.getProductByCondition(conditions);
-        return ProductDto.toDto(product);
+        return ProductResp.toDto(product);
     }
 
     @Override
-    public ProductDto getProductById(String productId) {
+    public ProductResp getProductById(String productId) {
         Map<String, Object> conditions = new HashMap<>();
         conditions.put(Product_.ID, productId);
         Product product = productRepository.getProductByCondition(conditions);
-        return ProductDto.toDto(product);
+        return ProductResp.toDto(product);
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public ProductDto saveProduct(ProductForm form) {
-        return ProductDto.toDto(productRepository.saveProduct(toProduct(form)));
+    public ProductResp saveProduct(ProductForm form) {
+        return ProductResp.toDto(productRepository.saveProduct(toProduct(form)));
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public ProductDto updateProduct(ProductForm form) {
+    public ProductResp updateProduct(ProductForm form) {
         return saveProduct(form);
     }
 
@@ -76,14 +76,14 @@ class ProductServiceImpl implements ProductService, ProductSearchingService {
     }
 
     @Override
-    public Page<ProductDto> productList(Pageable pageable) {
+    public Page<ProductResp> productList(Pageable pageable) {
         Map<String, Object> conditions = new HashMap<>();
         Page<Product> products = productRepository.getProductsByCondition(conditions, pageable);
-        return products.map(ProductDto::toDto);
+        return products.map(ProductResp::toDto);
     }
 
     @Override
-    public Page<ProductDto> searchProduct(ProductSearchForm form, Pageable pageable) {
+    public Page<ProductResp> searchProduct(ProductSearchForm form, Pageable pageable) {
         Map<String, Object> conditions = new HashMap<>();
         conditions.put(Product_.NAME, form.productName());
         conditions.put(Product_.PRICE, Integer.parseInt(form.price()));
@@ -94,28 +94,28 @@ class ProductServiceImpl implements ProductService, ProductSearchingService {
             List<Category> categories = Arrays.stream(form.categories()).map(categoryRepository::getCategoryByName).toList();
             conditions.put(Product_.CATEGORIES, categories);
         }
-        return productRepository.getProductsByCondition(conditions, pageable).map(ProductDto::toDto);
+        return productRepository.getProductsByCondition(conditions, pageable).map(ProductResp::toDto);
     }
 
     @Override
-    public Page<ProductDto> getProductsWithId(Collection<Object> ids) {
+    public Page<ProductResp> getProductsWithId(Collection<Object> ids) {
         Pageable pageable = Pageable.ofSize(ids.size());
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("IDS", ids);
-        return productRepository.getProductsByCondition(conditions, pageable).map(ProductDto::toDto);
+        return productRepository.getProductsByCondition(conditions, pageable).map(ProductResp::toDto);
     }
 
     @Override
-    public Page<ProductDto> search(ProductSearchForm form, Pageable pageable) {
+    public Page<ProductResp> search(ProductSearchForm form, Pageable pageable) {
         return searchProduct(form, pageable);
     }
 
     @Override
-    public Page<ProductDto> fullTextSearch(ProductSearchForm form, Pageable pageable) {
+    public Page<ProductResp> fullTextSearch(ProductSearchForm form, Pageable pageable) {
         Collection<String> productIds = searchEngine.searchIds(Product.class, form.productName());
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("IDS", productIds);
-        return productRepository.getProductsByCondition(conditions, pageable).map(ProductDto::toDto);
+        return productRepository.getProductsByCondition(conditions, pageable).map(ProductResp::toDto);
     }
 
     private Product toProduct(ProductForm form) {

@@ -1,6 +1,6 @@
 package com.order.bachlinh.web.controller.rest;
 
-import com.order.bachlinh.web.component.dto.resp.ProductDto;
+import com.order.bachlinh.web.component.dto.resp.ProductResp;
 import com.order.bachlinh.web.services.spi.common.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,10 +26,10 @@ public class HomeControllerRest {
     @GetMapping(path = HOME_URL)
     @ResponseStatus(code = HttpStatus.OK)
     public Map<String, Object> home() {
-        Page<ProductDto> productDtos = productService.productList(Pageable.ofSize(500));
+        Page<ProductResp> productDtos = productService.productList(Pageable.ofSize(500));
         Set<String> categories = new HashSet<>();
         productDtos.stream()
-                .map(ProductDto::categories)
+                .map(ProductResp::categories)
                 .distinct()
                 .map(Arrays::asList)
                 .collect(Collectors.toSet())

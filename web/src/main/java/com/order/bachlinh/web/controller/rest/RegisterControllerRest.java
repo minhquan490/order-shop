@@ -1,7 +1,7 @@
 package com.order.bachlinh.web.controller.rest;
 
 import com.order.bachlinh.web.component.dto.form.RegisterForm;
-import com.order.bachlinh.web.component.dto.resp.RegisterDto;
+import com.order.bachlinh.web.component.dto.resp.RegisterResp;
 import com.order.bachlinh.web.services.spi.common.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +21,13 @@ public class RegisterControllerRest {
 
     @PostMapping(path = REGISTER_URL)
     public ResponseEntity<Map<String, Object>> register(@RequestBody RegisterForm registerForm) {
-        RegisterDto registerDto = customerService.register(registerForm);
+        RegisterResp registerResp = customerService.register(registerForm);
         Map<String, Object> result = new HashMap<>();
-        if (registerDto.isError()) {
-            result.put("Message", registerDto.message());
+        if (registerResp.isError()) {
+            result.put("Message", registerResp.message());
             return ResponseEntity.badRequest().body(result);
         } else {
-            result.put("Message", registerDto.message());
+            result.put("Message", registerResp.message());
             return ResponseEntity.ok(result);
         }
     }

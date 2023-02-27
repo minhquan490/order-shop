@@ -7,20 +7,20 @@ import com.order.bachlinh.core.entities.model.ProductMedia;
 
 import java.util.Arrays;
 
-public record ProductDto(String id,
-                         String name,
-                         String price,
-                         String size,
-                         String color,
-                         String taobaoUrl,
-                         String description,
-                         String[] pictures,
-                         String[] categories) {
+public record ProductResp(String id,
+                          String name,
+                          String price,
+                          String size,
+                          String color,
+                          String taobaoUrl,
+                          String description,
+                          String[] pictures,
+                          String[] categories) {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ProductDto that = (ProductDto) o;
+        ProductResp that = (ProductResp) o;
         return Objects.equal(id, that.id) && Objects.equal(name, that.name) && Objects.equal(price, that.price) && Objects.equal(size, that.size) && Objects.equal(color, that.color) && Objects.equal(taobaoUrl, that.taobaoUrl) && Objects.equal(description, that.description) && Objects.equal(pictures, that.pictures) && Objects.equal(categories, that.categories);
     }
 
@@ -44,16 +44,16 @@ public record ProductDto(String id,
                 '}';
     }
 
-    public static ProductDto toDto(Product product) {
-        return new ProductDto(
-                (String) product.getId(),
+    public static ProductResp toDto(Product product) {
+        return new ProductResp(
+                product.getId(),
                 product.getName(),
                 String.valueOf(product.getPrice()),
                 product.getSize(),
                 product.getColor(),
                 product.getTaobaoUrl(),
                 product.getDescription(),
-                (String[]) product.getPictures().stream().map(ProductMedia::getUrl).toArray(),
+                (String[]) product.getMedias().stream().map(ProductMedia::getUrl).toArray(),
                 (String[]) product.getCategories().stream().map(Category::getName).toArray()
         );
     }

@@ -6,7 +6,7 @@ import com.order.bachlinh.core.entities.model.Product_;
 import com.order.bachlinh.core.entities.spi.EntityFactory;
 import com.order.bachlinh.core.entities.repositories.ProductRepository;
 import com.order.bachlinh.core.util.FileUtils;
-import com.order.bachlinh.web.component.dto.req.FlushFileDto;
+import com.order.bachlinh.web.component.dto.req.FlushFileReq;
 import com.order.bachlinh.web.services.spi.business.FileUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,7 +57,7 @@ class FileUploadServiceImpl implements FileUploadService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public boolean catAndFlushFile(FlushFileDto req) throws IOException {
+    public boolean catAndFlushFile(FlushFileReq req) throws IOException {
         Collection<Path> files = FileUtils.readDirectory(tempFilePath, req.fileName());
         AtomicBoolean result = new AtomicBoolean(true);
         for (Path file : files) {
@@ -82,7 +82,7 @@ class FileUploadServiceImpl implements FileUploadService {
         return FileUtils.writeToFile(pieces, String.join("/", tempFilePath, path[0]), path[1], ".bin");
     }
 
-    private void updateProduct(FlushFileDto req) {
+    private void updateProduct(FlushFileReq req) {
         Map<String, Object> conditions = new HashMap<>();
         conditions.put(Product_.ID, req.productId());
         Product product = productRepository.getProductByCondition(conditions);

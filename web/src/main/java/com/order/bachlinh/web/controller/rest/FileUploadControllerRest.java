@@ -1,6 +1,6 @@
 package com.order.bachlinh.web.controller.rest;
 
-import com.order.bachlinh.web.component.dto.req.FlushFileDto;
+import com.order.bachlinh.web.component.dto.req.FlushFileReq;
 import com.order.bachlinh.web.services.spi.business.FileUploadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,7 +37,7 @@ public class FileUploadControllerRest {
      * Flush all chunk files in the temp directory to the data directory. Must be called after upload.
      * */
     @PostMapping(path = FLUSH_FILE_URL)
-    public ResponseEntity<Object> flushFile(@RequestBody FlushFileDto req) throws IOException {
+    public ResponseEntity<Object> flushFile(@RequestBody FlushFileReq req) throws IOException {
         boolean result = fileUploadService.catAndFlushFile(req);
         if (result) {
             return ResponseEntity.status(HttpStatus.CREATED).build();

@@ -3,7 +3,7 @@ package com.order.bachlinh.web.services.internal;
 import com.order.bachlinh.core.entities.model.Category;
 import com.order.bachlinh.core.entities.spi.EntityFactory;
 import com.order.bachlinh.web.component.dto.form.CategoryForm;
-import com.order.bachlinh.web.component.dto.resp.CategoryDto;
+import com.order.bachlinh.web.component.dto.resp.CategoryResp;
 import com.order.bachlinh.core.entities.repositories.CategoryRepository;
 import com.order.bachlinh.web.services.spi.common.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -23,16 +23,16 @@ class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public CategoryDto saveCategory(CategoryForm form) {
+    public CategoryResp saveCategory(CategoryForm form) {
         Category category = entityFactory.getEntity(Category.class);
         category.setName(form.name());
         category = categoryRepository.saveCategory(category);
-        return new CategoryDto(category.getId(), category.getName());
+        return new CategoryResp(category.getId(), category.getName());
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
-    public CategoryDto updateCategory(CategoryForm form) {
+    public CategoryResp updateCategory(CategoryForm form) {
         return saveCategory(form);
     }
 
@@ -48,8 +48,8 @@ class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryDto> getCategories() {
-        Page<CategoryDto> categories = categoryRepository.getCategories().map(category -> new CategoryDto((String) category.getId(), category.getName()));
+    public List<CategoryResp> getCategories() {
+        Page<CategoryResp> categories = categoryRepository.getCategories().map(category -> new CategoryResp((String) category.getId(), category.getName()));
         return categories.stream().toList();
     }
 }

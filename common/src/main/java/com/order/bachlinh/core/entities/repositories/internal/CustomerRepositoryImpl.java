@@ -10,6 +10,7 @@ import com.order.bachlinh.core.entities.repositories.spi.ConditionExecutor;
 import com.order.bachlinh.core.entities.repositories.spi.Join;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -50,6 +51,7 @@ class CustomerRepositoryImpl extends AbstractRepository<Customer, String> implem
     public Customer getCustomerById(String id) {
         Specification<Customer> spec = Specification.where(((root, query, criteriaBuilder) -> {
             root.join(Customer_.refreshToken, JoinType.INNER);
+            root.join(Customer_.addresses, JoinType.LEFT);
             return criteriaBuilder.equal(root.get(Customer_.ID), id);
         }));
         return get(spec);
@@ -57,7 +59,11 @@ class CustomerRepositoryImpl extends AbstractRepository<Customer, String> implem
 
     @Override
     public Customer getCustomerByUsername(String username) {
-        Specification<Customer> spec = Specification.where(((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Customer_.USERNAME), username)));
+        Specification<Customer> spec = Specification.where(((root, query, criteriaBuilder) -> {
+            Predicate usernameEqual = criteriaBuilder.equal(root.get(Customer_.USERNAME), username);
+            Predicate enableEqual = criteriaBuilder.equal(root.get(Customer_.enabled), true);
+            return criteriaBuilder.and(usernameEqual, enableEqual);
+        }));
         return get(spec);
     }
 

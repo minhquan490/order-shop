@@ -37,7 +37,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Internal configuration for data source in this project.
+ * Internal configuration for a data source in this project.
  *
  * @author Hoang Minh Quan
  * */
