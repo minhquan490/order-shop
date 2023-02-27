@@ -4,7 +4,7 @@ import com.order.bachlinh.core.entities.model.Product;
 import com.order.bachlinh.core.entities.model.ProductMedia;
 import com.order.bachlinh.core.entities.model.Product_;
 import com.order.bachlinh.core.entities.spi.EntityFactory;
-import com.order.bachlinh.core.repositories.ProductRepository;
+import com.order.bachlinh.core.entities.repositories.ProductRepository;
 import com.order.bachlinh.core.util.FileUtils;
 import com.order.bachlinh.web.component.dto.req.FlushFileDto;
 import com.order.bachlinh.web.services.spi.business.FileUploadService;
@@ -79,7 +79,7 @@ class FileUploadServiceImpl implements FileUploadService {
 
     private boolean writeChunk(byte[] pieces, String directoryName) throws IOException {
         String[] path = directoryName.split("-");
-        return FileUtils.writeToFile(pieces, String.join("/", tempFilePath, path[0]), path[1], ".txt");
+        return FileUtils.writeToFile(pieces, String.join("/", tempFilePath, path[0]), path[1], ".bin");
     }
 
     private void updateProduct(FlushFileDto req) {
@@ -92,6 +92,6 @@ class FileUploadServiceImpl implements FileUploadService {
         Set<ProductMedia> medias = product.getMedias();
         medias.add(media);
         product.setMedias(medias);
-        productRepository.saveProduct(product);
+        productRepository.updateProduct(product);
     }
 }

@@ -4,7 +4,7 @@ import com.order.bachlinh.core.entities.model.Category;
 import com.order.bachlinh.core.entities.spi.EntityFactory;
 import com.order.bachlinh.web.component.dto.form.CategoryForm;
 import com.order.bachlinh.web.component.dto.resp.CategoryDto;
-import com.order.bachlinh.core.repositories.CategoryRepository;
+import com.order.bachlinh.core.entities.repositories.CategoryRepository;
 import com.order.bachlinh.web.services.spi.common.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

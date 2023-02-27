@@ -4,7 +4,7 @@ import com.order.bachlinh.core.entities.model.BaseEntity;
 import com.order.bachlinh.core.entities.model.Product;
 import com.order.bachlinh.core.entities.spi.AbstractValidator;
 import com.order.bachlinh.core.entities.spi.ValidateResult;
-import com.order.bachlinh.core.repositories.ProductRepository;
+import com.order.bachlinh.core.entities.repositories.ProductRepository;
 import org.springframework.context.ApplicationContext;
 
 public class ProductValidator extends AbstractValidator {

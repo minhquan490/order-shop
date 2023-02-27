@@ -7,8 +7,8 @@ import com.order.bachlinh.core.component.setup.spi.AbstractSetup;
 import com.order.bachlinh.core.entities.model.District;
 import com.order.bachlinh.core.entities.model.Province;
 import com.order.bachlinh.core.entities.spi.EntityFactory;
-import com.order.bachlinh.core.repositories.DistrictRepository;
-import com.order.bachlinh.core.repositories.ProvinceRepository;
+import com.order.bachlinh.core.entities.repositories.DistrictRepository;
+import com.order.bachlinh.core.entities.repositories.ProvinceRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationContext;
 

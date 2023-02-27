@@ -4,7 +4,7 @@ import com.order.bachlinh.core.entities.spi.EntityFactory;
 import com.order.bachlinh.core.security.token.spi.RefreshTokenGenerator;
 import com.order.bachlinh.core.entities.model.Customer;
 import com.order.bachlinh.core.entities.model.RefreshToken;
-import com.order.bachlinh.core.repositories.RefreshTokenRepository;
+import com.order.bachlinh.core.entities.repositories.RefreshTokenRepository;
 import com.order.bachlinh.core.security.token.spi.JwtDecoder;
 import com.order.bachlinh.core.security.token.spi.JwtEncoder;
 import com.order.bachlinh.core.security.token.spi.RefreshTokenHolder;

@@ -27,6 +27,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -44,12 +46,17 @@ class SecurityConfiguration {
     private String urlAdmin;
     private String clientUrl;
     private String secretKey;
+    private String loginUrl;
+    private String registerUrl;
+    private String homeUrl;
+    private String resourceUrl;
 
     private ApplicationContext applicationContext;
 
     @Bean
     AuthenticationFilter authenticationFilter() {
-        return new AuthenticationFilter(applicationContext);
+        Collection<String> urls = Arrays.asList(urlContentBase, loginUrl, registerUrl, homeUrl, resourceUrl);
+        return new AuthenticationFilter(applicationContext, urls);
     }
 
     @Bean
@@ -67,7 +74,7 @@ class SecurityConfiguration {
         return http
                 .csrf(csrf -> {
                     csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-                    csrf.ignoringRequestMatchers("/login", "/register", "/home");
+                    csrf.ignoringRequestMatchers(loginUrl, registerUrl, homeUrl, resourceUrl);
                 })
                 .cors(cors -> cors.configurationSource(corsConfigurationSource(clientUrl)))
                 .anonymous()
@@ -89,7 +96,7 @@ class SecurityConfiguration {
                 .authorizeHttpRequests()
                 .requestMatchers(urlAdmin).hasAuthority(Role.ADMIN.name())
                 .requestMatchers(urlCustomer).hasAnyAuthority(Role.ADMIN.name(), Role.CUSTOMER.name())
-                .requestMatchers(urlContentBase, "/login", "/register", "/home").permitAll()
+                .requestMatchers(urlContentBase, loginUrl, registerUrl, homeUrl, resourceUrl).permitAll()
                 .and()
                 .addFilterBefore(loggingRequestFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(authenticationFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -156,5 +163,25 @@ class SecurityConfiguration {
     @Value("${shop.url.admin}")
     public void setUrlAdmin(String urlAdmin) {
         this.urlAdmin = urlAdmin;
+    }
+
+    @Value("${shop.url.home}")
+    public void setHomeUrl(String homeUrl) {
+        this.homeUrl = homeUrl;
+    }
+
+    @Value("${shop.url.login}")
+    public void setLoginUrl(String loginUrl) {
+        this.loginUrl = loginUrl;
+    }
+
+    @Value("${shop.url.register}")
+    public void setRegisterUrl(String registerUrl) {
+        this.registerUrl = registerUrl;
+    }
+
+    @Value("${shop.url.resource}")
+    public void setResourceUrl(String resourceUrl) {
+        this.resourceUrl = resourceUrl;
     }
 }

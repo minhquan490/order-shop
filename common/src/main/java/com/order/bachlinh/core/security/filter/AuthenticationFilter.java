@@ -2,7 +2,7 @@ package com.order.bachlinh.core.security.filter;
 
 import com.order.bachlinh.core.entities.model.Customer;
 import com.order.bachlinh.core.exception.UnAuthorizationException;
-import com.order.bachlinh.core.repositories.CustomerRepository;
+import com.order.bachlinh.core.entities.repositories.CustomerRepository;
 import com.order.bachlinh.core.security.handler.TokenAuthenticationFailureHandler;
 import com.order.bachlinh.core.security.token.spi.PrincipalHolder;
 import com.order.bachlinh.core.security.token.spi.RefreshTokenHolder;
@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,18 +34,20 @@ public class AuthenticationFilter extends AbstractWebFilter {
     private final TokenManager tokenManager;
     private final CustomerRepository customerRepository;
     private final AuthenticationFailureHandler authenticationFailureHandler;
+    private final Collection<String> excludePaths;
 
-    public AuthenticationFilter(ApplicationContext applicationContext) {
+    public AuthenticationFilter(ApplicationContext applicationContext, Collection<String> excludePaths) {
         super(applicationContext);
         this.tokenManager = applicationContext.getBean(TokenManager.class);
         this.customerRepository = applicationContext.getBean(CustomerRepository.class);
         this.authenticationFailureHandler = new TokenAuthenticationFailureHandler();
+        this.excludePaths = excludePaths;
     }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         String requestPath = request.getServletPath();
-        if (requestPath.equals("/login") || requestPath.equals("/home") || requestPath.equals("/register")) {
+        if (excludePaths.contains(requestPath)) {
             filterChain.doFilter(request, response);
         }
         if ((response.getStatus() != HttpStatus.OK.value()) || response.isCommitted()) {

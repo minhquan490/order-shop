@@ -103,10 +103,10 @@ class DefaultEntityContext implements EntityContext {
         List<EntityValidator> vs = new ArrayList<>();
         try {
             for (Class<?> validator : v.validators()) {
-                vs.add((EntityValidator) validator.getConstructor(ApplicationContext.class).newInstance(context));
+                vs.add((EntityValidator) validator.getDeclaredConstructor(ApplicationContext.class).newInstance(context));
             }
         } catch (Exception e) {
-            // Ignore
+            log.error("Can not create validator", e);
         }
         return vs;
     }
@@ -119,11 +119,11 @@ class DefaultEntityContext implements EntityContext {
         List<EntityTrigger> entityTriggers = new ArrayList<>();
         try {
             for (Class<? extends EntityTrigger> t : trigger.triggers()) {
-                EntityTrigger triggerObject = t.getConstructor(ApplicationContext.class, TriggerMode.class).newInstance(context, trigger.mode());
+                EntityTrigger triggerObject = t.getDeclaredConstructor(ApplicationContext.class, TriggerMode.class).newInstance(context, trigger.mode());
                 entityTriggers.add(triggerObject);
             }
         } catch (Exception e) {
-            // Ignore
+            log.error("Can not create trigger", e);
         }
         return entityTriggers;
     }

@@ -4,9 +4,8 @@ import com.order.bachlinh.core.entities.model.Customer;
 import com.order.bachlinh.core.entities.model.CustomerHistory;
 import com.order.bachlinh.core.entities.model.RequestType;
 import com.order.bachlinh.core.entities.model.Role;
+import com.order.bachlinh.core.entities.repositories.CustomerHistoryRepository;
 import com.order.bachlinh.core.entities.spi.EntityFactory;
-import com.order.bachlinh.core.repositories.CustomerHistoryRepository;
-import com.order.bachlinh.core.repositories.CustomerRepository;
 import com.order.bachlinh.core.security.filter.AuthenticationFilter;
 import com.order.bachlinh.web.services.spi.business.CustomerHistoryTrackingService;
 import com.order.bachlinh.web.services.spi.business.HistoryClearService;
@@ -29,14 +28,12 @@ import java.util.Collection;
 class CustomerHistoryTrackingImpl implements CustomerHistoryTrackingService, HistoryClearService {
     private static final int REMOVAL_POLICY_YEAR = 1;
     private final CustomerHistoryRepository customerHistoryRepository;
-    private final CustomerRepository customerRepository;
     private final EntityFactory entityFactory;
 
     @Autowired
     CustomerHistoryTrackingImpl(ApplicationContext context) {
         this.customerHistoryRepository = context.getBean(CustomerHistoryRepository.class);
         this.entityFactory = context.getBean(EntityFactory.class);
-        this.customerRepository = context.getBean(CustomerRepository.class);
     }
 
     @Override
@@ -49,7 +46,7 @@ class CustomerHistoryTrackingImpl implements CustomerHistoryTrackingService, His
             return;
         }
         CustomerHistory history = entityFactory.getEntity(CustomerHistory.class);
-        history.setCustomerId((String) customer.getId());
+        history.setCustomerId(customer.getId());
         history.setPathRequest(event.getUrl());
         String[] paths = event.getUrl().split("/");
         RequestType requestType = determineRequest(paths[1]);

@@ -4,7 +4,7 @@ import com.order.bachlinh.core.entities.model.BaseEntity;
 import com.order.bachlinh.core.entities.model.Customer;
 import com.order.bachlinh.core.entities.spi.AbstractValidator;
 import com.order.bachlinh.core.entities.spi.ValidateResult;
-import com.order.bachlinh.core.repositories.CustomerRepository;
+import com.order.bachlinh.core.entities.repositories.CustomerRepository;
 import org.hibernate.validator.internal.util.DomainNameUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory;
