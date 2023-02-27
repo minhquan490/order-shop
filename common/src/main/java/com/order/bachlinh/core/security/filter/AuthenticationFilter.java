@@ -47,9 +47,10 @@ public class AuthenticationFilter extends AbstractWebFilter {
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         String requestPath = request.getServletPath();
-        if (excludePaths.contains(requestPath)) {
+        if (excludePaths.contains(requestPath) || requestPath.startsWith("/resource")) {
             filterChain.doFilter(request, response);
         }
+
         if ((response.getStatus() != HttpStatus.OK.value()) || response.isCommitted()) {
             return;
         }
