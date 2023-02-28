@@ -110,9 +110,10 @@ class ProductRepositoryImpl extends AbstractRepository<Product, String> implemen
                     case Product_.PRICE -> criteriaBuilder.lessThanOrEqualTo(root.get(key), (int) value);
                     case Product_.NAME -> criteriaBuilder.like(root.get(Product_.NAME), MessageFormat.format(LIKE_PATTERN, value));
                     case "IDS" -> criteriaBuilder.in(root.get(Product_.ID)).in(value);
+                    case Product_.CATEGORIES -> criteriaBuilder.in(root.get(Product_.CATEGORIES)).in(value);
                     default -> criteriaBuilder.equal(root.get(key), value);
                 };
-                predicateWrapper.set(criteriaBuilder.or(predicate));
+                predicateWrapper.set(criteriaBuilder.and(predicate));
             });
             return predicateWrapper.get();
         }));

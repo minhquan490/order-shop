@@ -20,7 +20,7 @@ public record RegisterForm(String username,
         customer.setEmail(this.email());
         customer.setPhoneNumber(this.phoneNumber());
         customer.setPassword(passwordEncoder.encode(this.password()));
-        customer.setGender(Gender.valueOf(this.gender().toUpperCase()).name());
+        customer.setGender(Gender.of(this.gender()).name());
         return customer;
     }
 }

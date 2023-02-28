@@ -17,7 +17,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-public class LogoutControllerRest {
+public class LogoutRestController {
     private static final String LOGOUT_PATH = "/logout";
     private static final String CLIENT_COOKIE_KEY = "client-secret";
     private final ClientSecretHandler clientSecretHandler;

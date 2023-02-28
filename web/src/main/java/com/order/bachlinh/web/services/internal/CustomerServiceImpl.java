@@ -8,6 +8,8 @@ import com.order.bachlinh.core.entities.repositories.CustomerRepository;
 import com.order.bachlinh.core.entities.spi.EntityFactory;
 import com.order.bachlinh.core.security.handler.ClientSecretHandler;
 import com.order.bachlinh.core.security.token.spi.TokenManager;
+import com.order.bachlinh.web.component.dto.form.CreateCustomerForm;
+import com.order.bachlinh.web.component.dto.form.CustomerUpdateForm;
 import com.order.bachlinh.web.component.dto.form.LoginForm;
 import com.order.bachlinh.web.component.dto.form.RegisterForm;
 import com.order.bachlinh.web.component.dto.resp.CustomerResp;
@@ -88,11 +90,29 @@ class CustomerServiceImpl implements CustomerService {
         return customerRepository.updateCustomer(customer) != null;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     @Override
     public void deleteCustomer(String customerId) {
         Customer customer = customerRepository.getCustomerById(customerId);
         customer.setEnabled(false);
         customerRepository.updateCustomer(customer);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public boolean createCustomer(CreateCustomerForm form) {
+        Customer customer = CreateCustomerForm.toCustomer(form, entityFactory, passwordEncoder);
+        return this.saveCustomer(customer);
+    }
+
+    @Override
+    public boolean updateCustomer(CustomerUpdateForm form) {
+        Customer customer = customerRepository.getCustomerById(form.getId());
+        customer.setFirstName(form.getFirstName());
+        customer.setLastName(form.getLastName());
+        customer.setEmail(form.getEmail());
+        customer.setPhoneNumber(form.getPhoneNumber());
+        return customerRepository.updateCustomer(customer) != null;
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.order.bachlinh.web.services.spi.common;
 
 import com.order.bachlinh.core.entities.model.Customer;
+import com.order.bachlinh.web.component.dto.form.CreateCustomerForm;
+import com.order.bachlinh.web.component.dto.form.CustomerUpdateForm;
 import com.order.bachlinh.web.component.dto.form.LoginForm;
 import com.order.bachlinh.web.component.dto.form.RegisterForm;
 import com.order.bachlinh.web.component.dto.resp.CustomerResp;
@@ -19,6 +21,10 @@ public interface CustomerService {
     boolean logout(Customer customer);
 
     void deleteCustomer(String customerId);
+
+    boolean createCustomer(CreateCustomerForm form);
+
+    boolean updateCustomer(CustomerUpdateForm form);
 
     CustomerInformationResp getCustomerInformation(String customerId);
 

@@ -17,7 +17,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-public class LoginControllerRest {
+public class LoginRestController {
     private static final String LOGIN_URL = "/login";
 
     private final CustomerService customerService;

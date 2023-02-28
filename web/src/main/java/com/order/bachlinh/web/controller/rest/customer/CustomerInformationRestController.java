@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class CustomerInformationControllerRest {
+public class CustomerInformationRestController {
     private static final String CUSTOMER_INFORMATION_URL = "/customer/information";
     private final CustomerService customerService;
 

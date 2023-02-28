@@ -4,7 +4,8 @@ import com.google.common.base.Objects;
 
 import java.util.Arrays;
 
-public record ProductForm(String name,
+public record ProductForm(String id,
+                          String name,
                           String price,
                           String size,
                           String color,

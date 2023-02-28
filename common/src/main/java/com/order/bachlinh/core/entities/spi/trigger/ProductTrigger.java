@@ -25,7 +25,7 @@ public class ProductTrigger extends AbstractTrigger {
         executor.execute(runnable);
     }
 
-    public void doExecute(BaseEntity entity) {
+    private void doExecute(BaseEntity entity) {
         Product product = (Product) entity;
         Class<?> productClass = product.getClass();
         if (!productClass.isAnnotationPresent(Store.class)) {

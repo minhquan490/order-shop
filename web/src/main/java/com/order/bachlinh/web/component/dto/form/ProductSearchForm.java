@@ -9,7 +9,10 @@ public record ProductSearchForm(String productName,
                                 String productSize,
                                 String color,
                                 String enable,
-                                String[] categories) {
+                                String[] categories,
+                                int page,
+                                int size,
+                                String mode) {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -13,7 +13,7 @@ import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
-public class ServingFileControllerRest {
+public class ServingFileRestController {
     private static final String RESOURCE_URL = "/resource/{id}";
 
     private final ProductMediaService productMediaService;

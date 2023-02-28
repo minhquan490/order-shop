@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class CustomerListControllerRest {
+public class CustomerListRestController {
     private static final String CUSTOMER_LIST = "/admin/customer/list";
     private static final int PAGE_SIZE = 100;
 

@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-public class HomeControllerRest {
+public class HomeRestController {
     private static final String HOME_URL = "/home";
     private final ProductService productService;
 

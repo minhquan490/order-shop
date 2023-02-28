@@ -5,6 +5,7 @@ import com.order.bachlinh.core.entities.model.Product;
 import com.order.bachlinh.core.entities.model.Product_;
 import com.order.bachlinh.core.entities.spi.EntityFactory;
 import com.order.bachlinh.core.entities.repositories.ProductRepository;
+import com.order.bachlinh.core.exception.ResourceNotFoundException;
 import com.order.bachlinh.web.component.dto.form.ProductForm;
 import com.order.bachlinh.web.component.dto.form.ProductSearchForm;
 import com.order.bachlinh.web.component.dto.resp.ProductResp;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -59,6 +61,9 @@ class ProductServiceImpl implements ProductService, ProductSearchingService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public ProductResp updateProduct(ProductForm form) {
+        if (getProductById(form.id()) == null) {
+            throw new ResourceNotFoundException("Product not exist");
+        }
         return saveProduct(form);
     }
 
@@ -94,6 +99,10 @@ class ProductServiceImpl implements ProductService, ProductSearchingService {
             List<Category> categories = Arrays.stream(form.categories()).map(categoryRepository::getCategoryByName).toList();
             conditions.put(Product_.CATEGORIES, categories);
         }
+        conditions = conditions.entrySet()
+                .stream()
+                .filter(entry -> entry.getValue() != null)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         return productRepository.getProductsByCondition(conditions, pageable).map(ProductResp::toDto);
     }
 
@@ -115,11 +124,24 @@ class ProductServiceImpl implements ProductService, ProductSearchingService {
         Collection<String> productIds = searchEngine.searchIds(Product.class, form.productName());
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("IDS", productIds);
+        conditions.put(Product_.COLOR, form.color());
+        conditions.put(Product_.PRICE, form.price());
+        conditions.put(Product_.SIZE, form.productSize());
+        conditions.put(Product_.ENABLED, true);
+        if (form.categories() != null) {
+            List<Category> categories = Arrays.stream(form.categories()).map(categoryRepository::getCategoryByName).toList();
+            conditions.put(Product_.CATEGORIES, categories);
+        }
+        conditions = conditions.entrySet()
+                .stream()
+                .filter(entry -> entry.getValue() != null)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         return productRepository.getProductsByCondition(conditions, pageable).map(ProductResp::toDto);
     }
 
     private Product toProduct(ProductForm form) {
         Product product = entityFactory.getEntity(Product.class);
+        product.setId(form.id());
         product.setName(form.name());
         product.setPrice(Integer.parseInt(form.price()));
         product.setColor(form.color());

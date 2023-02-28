@@ -17,7 +17,7 @@ import java.io.IOException;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/admin/file")
-public class FileUploadControllerRest {
+public class FileUploadRestController {
     private static final String UPLOAD_URL = "/upload";
     private static final String FLUSH_FILE_URL = "/flush";
 
