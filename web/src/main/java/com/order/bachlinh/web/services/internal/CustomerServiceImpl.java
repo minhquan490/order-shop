@@ -122,6 +122,12 @@ class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public CustomerResp getFullInfortmation(String customerId) {
+        Customer customer = customerRepository.getCustomerById(customerId);
+        return CustomerResp.toDto(customer);
+    }
+
+    @Override
     public Page<CustomerResp> getFullInformationOfCustomer(Pageable pageable) {
         return new PageImpl<>(
                 customerRepository.getAll(pageable, null)

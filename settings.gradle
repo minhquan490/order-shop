@@ -17,3 +17,5 @@ pluginManagement {
 rootProject.name = 'order-shop'
 include 'common'
 include 'web'
+include 'server'
+

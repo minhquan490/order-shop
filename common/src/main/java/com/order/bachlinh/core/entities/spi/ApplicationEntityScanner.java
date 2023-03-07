@@ -11,11 +11,12 @@ import org.springframework.util.StringUtils;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
  * Entity scanner for scan entity package to find all class
- * mark by {@link jakarta.persistence.Entity} annotation.
+ * marks by {@link jakarta.persistence.Entity} annotation.
  *
  * @author Hoang Minh Quan
  * */
@@ -44,7 +45,7 @@ public class ApplicationEntityScanner {
         for (String basePackage : packages) {
             if (StringUtils.hasText(basePackage)) {
                 for (BeanDefinition candidate : scanner.findCandidateComponents(basePackage)) {
-                    entitySet.add(ClassUtils.forName(candidate.getBeanClassName(), this.context.getClassLoader()));
+                    entitySet.add(ClassUtils.forName(Objects.requireNonNull(candidate.getBeanClassName()), this.context.getClassLoader()));
                 }
             }
         }

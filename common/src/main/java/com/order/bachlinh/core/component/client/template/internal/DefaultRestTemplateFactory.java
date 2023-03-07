@@ -1,8 +1,8 @@
 package com.order.bachlinh.core.component.client.template.internal;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.order.bachlinh.core.component.client.ssl.internal.SslProvider;
 import com.order.bachlinh.core.component.client.ssl.spi.SslConnectionSocketFactoryProvider;
 import com.order.bachlinh.core.component.client.template.spi.HttpClientProvider;
@@ -35,6 +35,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.MultiValueMapAdapter;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.Map;
 
@@ -148,30 +150,39 @@ class DefaultRestTemplateFactory implements RestTemplateFactory {
         }
 
         @Override
-        public JsonNode get(String url, Object body, MultiValueMap<String, String> headers, Map<String, ?> uriVariables) throws JsonProcessingException {
+        public JsonNode get(String url, Object body, MultiValueMap<String, String> headers, Map<String, ?> uriVariables) throws IOException {
             return request(url, HttpMethod.GET, body, headers, uriVariables);
         }
 
         @Override
-        public JsonNode put(String url, Object body, MultiValueMap<String, String> headers, Map<String, ?> uriVariables) throws JsonProcessingException {
+        public JsonNode put(String url, Object body, MultiValueMap<String, String> headers, Map<String, ?> uriVariables) throws IOException {
             return request(url, HttpMethod.PUT, body, headers, uriVariables);
         }
 
         @Override
-        public JsonNode post(String url, Object body, MultiValueMap<String, String> headers, Map<String, ?> uriVariables) throws JsonProcessingException {
+        public JsonNode post(String url, Object body, MultiValueMap<String, String> headers, Map<String, ?> uriVariables) throws IOException {
             return request(url, HttpMethod.POST, body, headers, uriVariables);
         }
 
         @Override
-        public JsonNode delete(String url, Object body, MultiValueMap<String, String> headers, Map<String, ?> uriVariables) throws JsonProcessingException {
+        public JsonNode delete(String url, Object body, MultiValueMap<String, String> headers, Map<String, ?> uriVariables) throws IOException {
             return request(url, HttpMethod.DELETE, body, headers, uriVariables);
         }
 
-        private JsonNode request(String url, HttpMethod method, Object body, MultiValueMap<String, String> headers, Map<String, ?> uriVariables) throws JsonProcessingException {
+        private JsonNode request(String url, HttpMethod method, Object body, MultiValueMap<String, String> headers, Map<String, ?> uriVariables) throws IOException {
             HttpHeaders httpHeaders = new HttpHeaders(headers == null ? new MultiValueMapAdapter<>(Collections.emptyMap()) : headers);
             HttpEntity<?> httpEntity = new HttpEntity<>(body, httpHeaders);
-            ResponseEntity<String> response = internalTemplate.exchange(url, method, httpEntity, String.class, uriVariables);
-            return jsonConverter.readTree(response.getBody());
+            ResponseEntity<?> response = internalTemplate.exchange(url, method, httpEntity, String.class, uriVariables);
+            if (response.hasBody()) {
+                Object bodyRes = response.getBody();
+                if (bodyRes instanceof String value) {
+                    return jsonConverter.readTree(value);
+                }
+                if (bodyRes instanceof InputStream value) {
+                    return jsonConverter.readTree(value);
+                }
+            }
+            return NullNode.getInstance();
         }
     }
 }
