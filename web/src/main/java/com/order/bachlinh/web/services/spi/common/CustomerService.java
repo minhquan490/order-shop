@@ -28,5 +28,7 @@ public interface CustomerService {
 
     CustomerInformationResp getCustomerInformation(String customerId);
 
+    CustomerResp getFullInfortmation(String customerId);
+
     Page<CustomerResp> getFullInformationOfCustomer(Pageable pageable);
 }
