@@ -44,8 +44,7 @@ dependencies {
     implementation 'org.hibernate.orm:hibernate-jcache:6.1.6.Final'
     implementation 'com.lmax:disruptor:3.4.4'
     implementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
-//    implementation 'org.hibernate.search:hibernate-search-backend-lucene:6.1.8.Final'
-//    implementation 'org.hibernate.search:hibernate-search-mapper-orm-orm6:6.1.8.Final'
+    implementation 'com.google.protobuf:protobuf-java:4.0.0-rc-2'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
@@ -62,6 +61,14 @@ dependencies {
         }
         module("org.springframework.boot:spring-boot-starter-logging") {
             replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of logging")
+        }
+    }
+    constraints {
+        implementation("com.google.guava:guava:31.1-jre") {
+            because 'Avoid vulnerable'
+        }
+        testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2") {
+            because 'Avoid vulnerable'
         }
     }
 }
