@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+    id 'org.graalvm.buildtools.native'
+}
+
+group = 'com.order.bachlinh'
+version = '0.0.1-SNAPSHOT'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    gradlePluginPortal()
+    maven { url 'https://repo.spring.io/release' }
+    maven { url 'https://repo1.maven.org/maven2/' }
+    maven { url 'https://repo.spring.io/milestone' }
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'io.netty.incubator:netty-incubator-codec-http3:0.0.16.Final'
+    implementation 'io.netty.incubator:netty-incubator-codec-quic:0.0.20.Final:linux-x86_64'
+    implementation 'com.google.protobuf:protobuf-java:4.0.0-rc-2'
+    compileOnly 'org.projectlombok:lombok:1.18.26'
+
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    constraints {
+        implementation("io.netty:netty-codec-http:4.1.89.Final") {
+            because 'avoid vulnerable'
+        }
+        implementation("com.google.guava:guava:31.1-jre") {
+            because 'Avoid vulnerable'
+        }
+        testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2") {
+            because 'Avoid vulnerable'
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
