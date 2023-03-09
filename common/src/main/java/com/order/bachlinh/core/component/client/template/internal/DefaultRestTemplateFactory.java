@@ -28,6 +28,7 @@ import org.apache.hc.core5.util.Timeout;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -35,10 +36,14 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.MultiValueMapAdapter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.ObjectOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 class DefaultRestTemplateFactory implements RestTemplateFactory {
     private final Long socketTimeOut;
@@ -169,8 +174,29 @@ class DefaultRestTemplateFactory implements RestTemplateFactory {
             return request(url, HttpMethod.DELETE, body, headers, uriVariables);
         }
 
+        @Override
+        public ByteBuffer get(String url, ByteBuffer body, MultiValueMap<String, String> headers, Map<String, ?> uriVariables) throws IOException {
+            return request(url, HttpMethod.GET, body, headers, uriVariables);
+        }
+
+        @Override
+        public ByteBuffer put(String url, ByteBuffer body, MultiValueMap<String, String> headers, Map<String, ?> uriVariables) throws IOException {
+            return request(url, HttpMethod.PUT, body, headers, uriVariables);
+        }
+
+        @Override
+        public ByteBuffer post(String url, ByteBuffer body, MultiValueMap<String, String> headers, Map<String, ?> uriVariables) throws IOException {
+            return request(url, HttpMethod.POST, body, headers, uriVariables);
+        }
+
+        @Override
+        public ByteBuffer delete(String url, ByteBuffer body, MultiValueMap<String, String> headers, Map<String, ?> uriVariables) throws IOException {
+            return request(url, HttpMethod.DELETE, body, headers, uriVariables);
+        }
+
         private JsonNode request(String url, HttpMethod method, Object body, MultiValueMap<String, String> headers, Map<String, ?> uriVariables) throws IOException {
             HttpHeaders httpHeaders = new HttpHeaders(headers == null ? new MultiValueMapAdapter<>(Collections.emptyMap()) : headers);
+            httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
             HttpEntity<?> httpEntity = new HttpEntity<>(body, httpHeaders);
             ResponseEntity<?> response = internalTemplate.exchange(url, method, httpEntity, String.class, uriVariables);
             if (response.hasBody()) {
@@ -178,11 +204,35 @@ class DefaultRestTemplateFactory implements RestTemplateFactory {
                 if (bodyRes instanceof String value) {
                     return jsonConverter.readTree(value);
                 }
-                if (bodyRes instanceof InputStream value) {
-                    return jsonConverter.readTree(value);
-                }
             }
             return NullNode.getInstance();
+        }
+
+        private ByteBuffer request(String url, HttpMethod method, ByteBuffer body, MultiValueMap<String, String> headers, Map<String, ?> uriVariables) throws IOException {
+            HttpHeaders httpHeaders = new HttpHeaders(headers == null ? new MultiValueMapAdapter<>(Collections.emptyMap()) : headers);
+            httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PROTOBUF_VALUE);
+            HttpEntity<?> httpEntity = new HttpEntity<>(body.array(), httpHeaders);
+            ResponseEntity<?> response = internalTemplate.exchange(url, method, httpEntity, byte[].class, uriVariables);
+            ByteBuffer responseBuffer = ByteBuffer.wrap(serializeData(response.getHeaders()
+                    .entrySet()
+                    .stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))));
+            if (response.hasBody()) {
+                Object resp = response.getBody();
+                if (resp instanceof byte[] value) {
+                    byte[] header = responseBuffer.array();
+                    String builder = new String(header, StandardCharsets.UTF_8) + '\n' + new String(value, StandardCharsets.UTF_8);
+                    responseBuffer = ByteBuffer.wrap(builder.getBytes(StandardCharsets.UTF_8));
+                }
+            }
+            return responseBuffer;
+        }
+
+        private byte[] serializeData(Object data) throws IOException {
+            ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream(byteOut);
+            out.writeObject(data);
+            return byteOut.toByteArray();
         }
     }
 }

@@ -3,6 +3,7 @@ package com.order.bachlinh.server.boot.internal;
 import com.order.bachlinh.server.boot.spi.ChannelHandlerFactory;
 import com.order.bachlinh.server.boot.spi.ChannelInitializer;
 import com.order.bachlinh.server.boot.spi.EventLoopGroupFactory;
+import com.order.bachlinh.server.boot.spi.QuicSslContextFactory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -19,5 +20,9 @@ public final class InternalModuleProvider {
 
     public static ChannelInitializer.Builder channelInitializerBuilder() {
         return SimpleChannelInitializer.builder();
+    }
+
+    public static QuicSslContextFactory sslContextFactory() {
+        return new SimpleSslContextFactory();
     }
 }

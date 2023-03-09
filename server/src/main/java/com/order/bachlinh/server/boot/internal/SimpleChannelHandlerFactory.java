@@ -2,6 +2,7 @@ package com.order.bachlinh.server.boot.internal;
 
 import com.order.bachlinh.server.boot.spi.ChannelDecorator;
 import com.order.bachlinh.server.boot.spi.ChannelHandlerFactory;
+import com.order.bachlinh.server.boot.spi.QuicSslContextFactory;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
@@ -38,6 +39,10 @@ class SimpleChannelHandlerFactory implements ChannelHandlerFactory {
 
     @Override
     public ChannelHandler create() {
+        if (sslContext == null) {
+            QuicSslContextFactory contextFactory = new SimpleSslContextFactory();
+            sslContext = contextFactory.defaultSslContext();
+        }
         return Http3.newQuicServerCodecBuilder()
                 .sslContext((QuicSslContext) sslContext)
                 .maxIdleTimeout(idleTimeout, TimeUnit.MICROSECONDS)
