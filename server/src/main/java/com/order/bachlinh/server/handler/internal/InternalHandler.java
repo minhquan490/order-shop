@@ -3,6 +3,8 @@ package com.order.bachlinh.server.handler.internal;
 import com.google.common.reflect.ClassPath;
 import com.order.bachlinh.server.ServerApplication;
 import com.order.bachlinh.server.boot.spi.ChannelDecorator;
+import com.order.bachlinh.server.component.handler.AbstractInboundHandler;
+import com.order.bachlinh.server.component.handler.AbstractOutboundHandler;
 import com.order.bachlinh.server.handler.annotation.HandlerInitializer;
 import com.order.bachlinh.server.handler.annotation.QuicChannel;
 import com.order.bachlinh.server.handler.annotation.QuicStreamChannel;
@@ -14,7 +16,6 @@ import io.netty.channel.ChannelHandler;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 import java.io.IOException;
@@ -52,15 +53,8 @@ class InternalHandler implements ChannelHandlerLookup, ChannelDecoratorProvider 
                     .stream()
                     .filter(clazz -> clazz.getPackageName().equalsIgnoreCase(location))
                     .map(ClassPath.ClassInfo::load)
-                    .filter(clazz -> clazz.isAssignableFrom(ChannelHandler.class))
-                    .filter(clazz -> clazz.isAnnotationPresent(QuicChannel.class) || clazz.isAnnotationPresent(QuicStreamChannel.class))
-                    .sorted(Comparator.comparing(clazz -> {
-                        Order order = clazz.getAnnotation(Order.class);
-                        if (order == null) {
-                            return Ordered.LOWEST_PRECEDENCE;
-                        }
-                        return order.value();
-                    }))
+                    .filter(this::filterCondition)
+                    .sorted(Comparator.comparing(clazz -> clazz.getAnnotation(Order.class).value()))
                     .map(this::newInstance)
                     .map(ChannelHandler.class::cast)
                     .collect(Collectors.toList());
@@ -111,6 +105,9 @@ class InternalHandler implements ChannelHandlerLookup, ChannelDecoratorProvider 
     private <T> T newInstance(Class<T> target) {
         try {
             Constructor<?> constructor = getConstructor(target, HandlerInitializer.class);
+            if (constructor.getParameterTypes().length == 0) {
+                return (T) constructor.newInstance();
+            }
             return (T) constructor.newInstance(parameterProvider.getParameters(constructor.getParameterTypes()));
         } catch (Exception e) {
             throw new IllegalStateException("Can not instance class with type [" + target.getName() + "]", e);
@@ -156,5 +153,12 @@ class InternalHandler implements ChannelHandlerLookup, ChannelDecoratorProvider 
             paramTypeCache.put(types, result.toArray());
             log.info("Instance complete");
         }
+    }
+
+    private boolean filterCondition(Class<?> clazz) {
+        return (Modifier.isAbstract(clazz.getModifiers()) || Modifier.isInterface(clazz.getModifiers())) &&
+                (clazz.isAssignableFrom(AbstractInboundHandler.class) || clazz.isAssignableFrom(AbstractOutboundHandler.class)) &&
+                (clazz.isAnnotationPresent(QuicChannel.class) || clazz.isAnnotationPresent(QuicStreamChannel.class)) &&
+                clazz.isAnnotationPresent(Order.class);
     }
 }

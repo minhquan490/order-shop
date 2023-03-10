@@ -3,6 +3,10 @@ package com.order.bachlinh.server.boot.internal;
 import com.order.bachlinh.server.boot.spi.ChannelDecorator;
 import com.order.bachlinh.server.boot.spi.ChannelHandlerFactory;
 import com.order.bachlinh.server.boot.spi.QuicSslContextFactory;
+import com.order.bachlinh.server.component.handler.FrontHandler;
+import com.order.bachlinh.server.component.handler.HttpConventionHandler;
+import com.order.bachlinh.server.component.handler.LoggingRequestHandler;
+import com.order.bachlinh.server.component.handler.PathMatchHandler;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
@@ -167,6 +171,10 @@ class SimpleChannelHandlerFactory implements ChannelHandlerFactory {
                     ch.pipeline().addLast(new Http3ServerConnectionHandler(new ChannelInitializer<QuicStreamChannel>() {
                         @Override
                         protected void initChannel(QuicStreamChannel ch) {
+                            ch.pipeline().addFirst("frontHandler", new FrontHandler());
+                            ch.pipeline().addFirst("httpConventionHandler", new HttpConventionHandler());
+                            ch.pipeline().addFirst("loggingRequestHandler", new LoggingRequestHandler());
+                            ch.pipeline().addFirst("pathMatchHandler", new PathMatchHandler());
                             quicStreamChannelDecorators.forEach(decorator -> decorator.decorate(ch));
                         }
                     }));
