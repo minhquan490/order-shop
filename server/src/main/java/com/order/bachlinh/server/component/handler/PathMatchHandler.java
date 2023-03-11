@@ -2,9 +2,11 @@ package com.order.bachlinh.server.component.handler;
 
 import com.order.bachlinh.core.component.client.java.internal.HttpClientFactoryBuilderProvider;
 import com.order.bachlinh.core.component.client.java.spi.HttpClientFactory;
+import com.order.bachlinh.server.component.exception.MethodNotSupportedException;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.NonNull;
 
 import java.net.URI;
@@ -17,6 +19,7 @@ import java.util.Optional;
 
 public final class PathMatchHandler extends ChannelInboundHandlerAdapter {
     private static final String CLIENT_URL;
+    private static final String SERVER_RESOURCE;
     private static final HttpClient singletonClient;
 
     static {
@@ -24,6 +27,7 @@ public final class PathMatchHandler extends ChannelInboundHandlerAdapter {
         builder.connectTimeout(Duration.ofSeconds(10));
         singletonClient = builder.buildFactory().createJavaCoreClient();
         CLIENT_URL = System.getProperty("server.frontend.url");
+        SERVER_RESOURCE = System.getProperty("server.resource.url");
     }
 
     @Override
@@ -32,16 +36,21 @@ public final class PathMatchHandler extends ChannelInboundHandlerAdapter {
             switch (req.method()) {
                 case "GET" -> {
                     Optional<String> contentType = req.headers().firstValue(HttpHeaderNames.CONTENT_TYPE.toString());
-                    if (contentType.isPresent()) {
-                        super.channelRead(ctx, msg);
+                    if (contentType.isEmpty()) {
+                        String path = req.uri().getPath();
+                        if (path.startsWith(SERVER_RESOURCE)) {
+                            super.channelRead(ctx, msg);
+                            return;
+                        }
+                        HttpRequest newRequest = replaceUrl(req, CLIENT_URL.concat(path));
+                        HttpResponse<?> response = singletonClient.send(newRequest, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+                        ctx.write(response);
                         return;
                     }
-                    HttpRequest newRequest = replaceUrl(req, CLIENT_URL.concat(req.uri().toString()));
-                    HttpResponse<?> response = singletonClient.send(newRequest, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
-                    ctx.write(response);
+                    super.channelRead(ctx, msg);
                 }
                 case "POST", "PUT", "DELETE" -> super.channelRead(ctx, msg);
-                default -> ctx.fireExceptionCaught(new UnsupportedOperationException("Only support method GET, POST, PUT, DELETE"));
+                default -> ctx.fireExceptionCaught(new MethodNotSupportedException("Only support method GET, POST, PUT, DELETE", HttpResponseStatus.METHOD_NOT_ALLOWED.code()));
             }
             return;
         }

@@ -74,15 +74,8 @@ public final class HttpConventionHandler extends ChannelInboundHandlerAdapter im
         if (msg instanceof FullHttpRequest req) {
             HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
             req.headers().forEach(entry -> requestBuilder.header(entry.getKey(), entry.getValue()));
-            if (req.uri().startsWith("https://") || req.uri().startsWith("http://")) {
-                requestBuilder.uri(URI.create("/" + req.uri().split("/")[2]));
-            } else {
-                if (req.uri().startsWith("/")) {
-                    requestBuilder.uri(URI.create(req.uri()));
-                } else {
-                    requestBuilder.uri(URI.create("/" + req.uri()));
-                }
-            }
+            String fullUrl = req.uri();
+            requestBuilder.uri(URI.create(fullUrl));
             requestBuilder.method(req.method().name(), HttpRequest.BodyPublishers.ofString(new String(req.content().array(), StandardCharsets.UTF_8)));
             super.channelRead(ctx, requestBuilder.build());
             return;
