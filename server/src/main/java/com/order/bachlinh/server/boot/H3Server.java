@@ -1,4 +1,4 @@
-package com.order.bachlinh.server;
+package com.order.bachlinh.server.boot;
 
 import com.order.bachlinh.server.boot.internal.InternalModuleProvider;
 import com.order.bachlinh.server.boot.spi.ChannelDecorator;
@@ -13,7 +13,6 @@ import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.incubator.codec.quic.QuicTokenHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import io.netty.util.concurrent.UnorderedThreadPoolEventExecutor;
-import lombok.Builder;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadFactory;
@@ -37,7 +36,6 @@ public final class H3Server {
     private final QuicTokenHandler tokenHandler;
     private Channel channel;
 
-    @Builder
     private H3Server(long idleTimeOut,
                      long maxData,
                      long maxStreamDataLocal,
@@ -65,10 +63,14 @@ public final class H3Server {
         this.certPath = certPath;
         this.keyPath = keyPath;
         this.password = password;
-        this.channelInitializer = buildChannelInitializer();
         this.tokenHandler = tokenHandler;
+        this.channelInitializer = buildChannelInitializer();
         this.maxStreamsUnidirectional = maxStreamsUnidirectional;
         this.maxStreamDataUnidirectional = maxStreamDataUnidirectional;
+    }
+
+    public static H3ServerBuilder builder() {
+        return new H3ServerBuilder();
     }
 
     public void run() throws InterruptedException {
@@ -120,5 +122,118 @@ public final class H3Server {
                 .host(host)
                 .port(port)
                 .build();
+    }
+
+    public static class H3ServerBuilder {
+        private long idleTimeOut;
+        private long maxData;
+        private long maxStreamDataLocal;
+        private long maxStreamDataRemote;
+        private long maxStream;
+        private long maxStreamsUnidirectional;
+        private long maxStreamDataUnidirectional;
+        private int port;
+        private int numberOfThread;
+        private String host;
+        private String handlerPackage;
+        private String certPath;
+        private String keyPath;
+        private String password;
+        private QuicTokenHandler tokenHandler;
+
+        H3ServerBuilder(){}
+
+        public H3ServerBuilder idleTimeOut(long idleTimeOut) {
+            this.idleTimeOut = idleTimeOut;
+            return this;
+        }
+
+        public H3ServerBuilder maxData(long maxData) {
+            this.maxData = maxData;
+            return this;
+        }
+
+        public H3ServerBuilder maxStreamDataLocal(long maxStreamDataLocal) {
+            this.maxStreamDataLocal = maxStreamDataLocal;
+            return this;
+        }
+
+        public H3ServerBuilder maxStreamDataRemote(long maxStreamDataRemote) {
+            this.maxStreamDataRemote = maxStreamDataRemote;
+            return this;
+        }
+
+        public H3ServerBuilder maxStream(long maxStream) {
+            this.maxStream = maxStream;
+            return this;
+        }
+
+        public H3ServerBuilder maxStreamsUnidirectional(long maxStreamsUnidirectional) {
+            this.maxStreamsUnidirectional = maxStreamsUnidirectional;
+            return this;
+        }
+
+        public H3ServerBuilder maxStreamDataUnidirectional(long maxStreamDataUnidirectional) {
+            this.maxStreamDataUnidirectional = maxStreamDataUnidirectional;
+            return this;
+        }
+
+        public H3ServerBuilder port(int port) {
+            this.port = port;
+            return this;
+        }
+
+        public H3ServerBuilder numberOfThread(int numberOfThread) {
+            this.numberOfThread = numberOfThread;
+            return this;
+        }
+
+        public H3ServerBuilder host(String host) {
+            this.host = host;
+            return this;
+        }
+
+        public H3ServerBuilder handlerPackage(String handlerPackage) {
+            this.handlerPackage = handlerPackage;
+            return this;
+        }
+
+        public H3ServerBuilder certPath(String certPath) {
+            this.certPath = certPath;
+            return this;
+        }
+
+        public H3ServerBuilder keyPath(String keyPath) {
+            this.keyPath = keyPath;
+            return this;
+        }
+
+        public H3ServerBuilder password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public H3ServerBuilder tokenHandler(QuicTokenHandler tokenHandler) {
+            this.tokenHandler = tokenHandler;
+            return this;
+        }
+
+        public H3Server build() {
+            return new H3Server(idleTimeOut,
+                                maxData,
+                                maxStreamDataLocal,
+                                maxStreamDataRemote,
+                                maxStream,
+                                maxStreamsUnidirectional,
+                                maxStreamDataUnidirectional,
+                                port,
+                                numberOfThread,
+                                host,
+                                handlerPackage,
+                                certPath,
+                                keyPath,
+                                password,
+                                tokenHandler);
+        }
     }
 }

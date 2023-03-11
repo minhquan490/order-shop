@@ -12,6 +12,7 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
+import lombok.NonNull;
 
 import java.net.SocketAddress;
 import java.net.URI;
@@ -23,32 +24,32 @@ public final class HttpConventionHandler extends ChannelInboundHandlerAdapter im
     private static final ObjectMapper SINGLETON = new ObjectMapper();
 
     @Override
-    public void bind(ChannelHandlerContext ctx, SocketAddress localAddress, ChannelPromise promise) throws Exception {
+    public void bind(ChannelHandlerContext ctx, SocketAddress localAddress, ChannelPromise promise) {
         ctx.bind(localAddress, promise);
     }
 
     @Override
-    public void connect(ChannelHandlerContext ctx, SocketAddress remoteAddress, SocketAddress localAddress, ChannelPromise promise) throws Exception {
+    public void connect(ChannelHandlerContext ctx, SocketAddress remoteAddress, SocketAddress localAddress, ChannelPromise promise) {
         ctx.connect(remoteAddress, localAddress, promise);
     }
 
     @Override
-    public void disconnect(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
+    public void disconnect(ChannelHandlerContext ctx, ChannelPromise promise) {
         ctx.disconnect(promise);
     }
 
     @Override
-    public void close(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
+    public void close(ChannelHandlerContext ctx, ChannelPromise promise) {
         ctx.close(promise);
     }
 
     @Override
-    public void deregister(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
+    public void deregister(ChannelHandlerContext ctx, ChannelPromise promise) {
         ctx.deregister(promise);
     }
 
     @Override
-    public void read(ChannelHandlerContext ctx) throws Exception {
+    public void read(ChannelHandlerContext ctx) {
         ctx.read();
     }
 
@@ -69,14 +70,18 @@ public final class HttpConventionHandler extends ChannelInboundHandlerAdapter im
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void channelRead(@NonNull ChannelHandlerContext ctx, @NonNull Object msg) throws Exception {
         if (msg instanceof FullHttpRequest req) {
             HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
             req.headers().forEach(entry -> requestBuilder.header(entry.getKey(), entry.getValue()));
             if (req.uri().startsWith("https://") || req.uri().startsWith("http://")) {
-                requestBuilder.uri(URI.create(req.uri().split("/")[2]));
+                requestBuilder.uri(URI.create("/" + req.uri().split("/")[2]));
             } else {
-                requestBuilder.uri(URI.create(req.uri()));
+                if (req.uri().startsWith("/")) {
+                    requestBuilder.uri(URI.create(req.uri()));
+                } else {
+                    requestBuilder.uri(URI.create("/" + req.uri()));
+                }
             }
             requestBuilder.method(req.method().name(), HttpRequest.BodyPublishers.ofString(new String(req.content().array(), StandardCharsets.UTF_8)));
             super.channelRead(ctx, requestBuilder.build());
@@ -86,7 +91,7 @@ public final class HttpConventionHandler extends ChannelInboundHandlerAdapter im
     }
 
     @Override
-    public void flush(ChannelHandlerContext ctx) throws Exception {
+    public void flush(ChannelHandlerContext ctx) {
         ctx.flush();
     }
 

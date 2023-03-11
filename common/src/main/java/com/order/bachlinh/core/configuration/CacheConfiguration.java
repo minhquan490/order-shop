@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import javax.cache.CacheManager;
 import javax.cache.Caching;
@@ -31,10 +32,12 @@ import java.util.Optional;
 @Log4j2
 @EnableCaching(proxyTargetClass = true, mode = AdviceMode.ASPECTJ)
 @RequiredArgsConstructor
+@Lazy
 class CacheConfiguration {
     private final ApplicationContext applicationContext;
 
     @Bean
+    @Lazy
     SpringCacheManager cacheManager() {
         SpringCacheManager cacheManager = new SpringCacheManager(initCacheManager());
         cacheManager.setAllowNullValues(false);

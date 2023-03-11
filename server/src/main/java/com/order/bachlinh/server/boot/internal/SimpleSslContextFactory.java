@@ -21,11 +21,11 @@ class SimpleSslContextFactory implements QuicSslContextFactory {
 
     @Override
     public QuicSslContext defaultSslContext() {
-        String rootPath = new File("").getAbsolutePath();
+        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         String certName = "localhost.pem";
         String keyName = "localhost-key.pem";
-        String certPath = String.join("/", rootPath, "src", "main", "resources", certName);
-        String keyPath = String.join("/", rootPath, "src", "main", "resources", keyName);
+        String certPath = classLoader.getResource(certName).getPath();
+        String keyPath = classLoader.getResource(keyName).getPath();
         String password = "";
         return manualSslContext(keyPath, password, certPath);
     }

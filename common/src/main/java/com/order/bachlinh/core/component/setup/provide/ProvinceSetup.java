@@ -1,15 +1,15 @@
 package com.order.bachlinh.core.component.setup.provide;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.order.bachlinh.core.component.client.template.spi.RestTemplate;
 import com.order.bachlinh.core.component.setup.spi.AbstractSetup;
 import com.order.bachlinh.core.entities.model.Province;
-import com.order.bachlinh.core.entities.spi.EntityFactory;
 import com.order.bachlinh.core.entities.repositories.ProvinceRepository;
+import com.order.bachlinh.core.entities.spi.EntityFactory;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationContext;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,8 +37,8 @@ class ProvinceSetup extends AbstractSetup {
         }
         JsonNode resp;
         try {
-            resp = restTemplate.get(PROVINCE_API, null, null, Collections.emptyMap());
-        } catch (JsonProcessingException e) {
+            resp = restTemplate.get(PROVINCE_API, (Object) null, null, Collections.emptyMap());
+        } catch (IOException e) {
             log.warn("Call province api failure");
             return;
         }

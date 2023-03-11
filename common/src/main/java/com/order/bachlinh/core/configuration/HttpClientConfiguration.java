@@ -6,11 +6,14 @@ import com.order.bachlinh.core.component.client.template.spi.RestTemplateFactory
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 @Configuration
-class HttpClientConfiguration {
+@Lazy
+public class HttpClientConfiguration {
 
     @Bean
+    @Lazy
     RestTemplate restTemplate(@Value("${server.ssl.certificate}") String certPath,
                               @Value("${server.ssl.certificate-private-key}") String keyPath) throws Exception {
         RestTemplateFactory.Builder builder = RestTemplateFactoryBuilderProvider.getFactoryBuilder();

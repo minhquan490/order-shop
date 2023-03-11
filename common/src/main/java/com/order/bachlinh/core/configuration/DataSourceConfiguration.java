@@ -20,6 +20,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
@@ -45,6 +46,7 @@ import java.util.Properties;
 @EnableJpaAuditing(auditorAwareRef = "auditorProvider")
 @EnableTransactionManagement(proxyTargetClass = true, mode = AdviceMode.ASPECTJ)
 @PropertySource(value = "classpath:common.properties")
+@Lazy
 class DataSourceConfiguration {
     private String databaseAddress;
     private String databaseName;
@@ -56,6 +58,7 @@ class DataSourceConfiguration {
     private ApplicationContext applicationContext;
 
     @Bean(name = "entityManagerFactory")
+    @Lazy
     LocalSessionFactoryBean sessionFactoryBean() {
         LocalSessionFactoryBean factoryBean = new LocalSessionFactoryBean();
         factoryBean.setDataSource(dataSource());
@@ -66,11 +69,13 @@ class DataSourceConfiguration {
     }
 
     @Bean(name = "transactionManager")
+    @Lazy
     HibernateTransactionManager transactionManager() {
         return new HibernateTransactionManager(applicationContext.getBean(SessionFactory.class));
     }
 
     @Bean
+    @Lazy
     EntityFactory entityFactory() {
         return EntityFactoryBuilderProvider.useDefaultEntityFactoryBuilder()
                 .applicationContext(applicationContext)
@@ -80,12 +85,14 @@ class DataSourceConfiguration {
     @Bean
     @Primary
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+    @Lazy
     public EntityManager entityManager() {
         EntityManagerFactory entityManagerFactory = applicationContext.getBean(EntityManagerFactory.class);
         return entityManagerFactory.createEntityManager();
     }
 
     @Bean
+    @Lazy
     AuditorAware<Object> auditorProvider() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal;

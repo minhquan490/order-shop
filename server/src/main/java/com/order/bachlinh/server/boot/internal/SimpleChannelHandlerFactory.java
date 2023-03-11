@@ -3,6 +3,7 @@ package com.order.bachlinh.server.boot.internal;
 import com.order.bachlinh.server.boot.spi.ChannelDecorator;
 import com.order.bachlinh.server.boot.spi.ChannelHandlerFactory;
 import com.order.bachlinh.server.boot.spi.QuicSslContextFactory;
+import com.order.bachlinh.server.component.handler.ExceptionTranslateHandler;
 import com.order.bachlinh.server.component.handler.FrontHandler;
 import com.order.bachlinh.server.component.handler.HttpConventionHandler;
 import com.order.bachlinh.server.component.handler.LoggingRequestHandler;
@@ -175,6 +176,7 @@ class SimpleChannelHandlerFactory implements ChannelHandlerFactory {
                             ch.pipeline().addFirst("httpConventionHandler", new HttpConventionHandler());
                             ch.pipeline().addFirst("loggingRequestHandler", new LoggingRequestHandler());
                             ch.pipeline().addFirst("pathMatchHandler", new PathMatchHandler());
+                            ch.pipeline().addFirst("exceptionTranslateHandler", new ExceptionTranslateHandler());
                             quicStreamChannelDecorators.forEach(decorator -> decorator.decorate(ch));
                         }
                     }));

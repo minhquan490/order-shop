@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.NONE)
 public class SslProvider {
 
-    static SslContextFactory.Builder findSslContextFactoryBuilder() {
+    public static SslContextFactory.Builder findSslContextFactoryBuilder() {
         return new SslContextFactoryBuilderImplementer();
     }
 

@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.net.InetSocketAddress;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -91,6 +92,9 @@ class SimpleChannelInitializer implements ChannelInitializer {
 
         @Override
         public ChannelInitializer build() {
+            if (listeners == null) {
+                listeners = Collections.emptySet();
+            }
             return new SimpleChannelInitializer(group, channelType, handler, hostName, port, listeners);
         }
     }

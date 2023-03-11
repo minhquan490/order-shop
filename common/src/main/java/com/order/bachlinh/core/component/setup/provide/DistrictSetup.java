@@ -42,7 +42,7 @@ class DistrictSetup extends AbstractSetup {
         }
         JsonNode resp;
         try {
-            resp = restTemplate.get(DISTRICT_API, null, null, Collections.emptyMap());
+            resp = restTemplate.get(DISTRICT_API, (Object) null, null, Collections.emptyMap());
         } catch (IOException e) {
             log.warn("Failure when process district response");
             return;

@@ -1,6 +1,7 @@
 plugins {
     id 'java'
-    id 'org.graalvm.buildtools.native'
+    id 'io.spring.dependency-management'
+    id 'org.springframework.boot'
 }
 
 group = 'com.order.bachlinh'
@@ -23,16 +24,30 @@ repositories {
 dependencies {
     implementation 'com.google.guava:guava'
     implementation 'io.netty.incubator:netty-incubator-codec-http3:0.0.16.Final'
-    implementation 'io.netty.incubator:netty-incubator-codec-quic:0.0.20.Final:linux-x86_64'
     implementation project(":common")
     implementation 'com.google.protobuf:protobuf-java:4.0.0-rc-2'
     implementation 'org.springframework:spring-context:6.0.4'
-    implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
+    implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
+    implementation 'org.apache.logging.log4j:log4j-slf4j2-impl:2.20.0'
     compileOnly 'org.projectlombok:lombok:1.18.26'
+    runtimeOnly 'org.apache.logging.log4j:log4j-jul:2.20.0'
+    runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
+    runtimeOnly 'org.springframework.boot:spring-boot-starter-aop'
+    runtimeOnly 'org.springframework.boot:spring-boot-starter-cache'
+    runtimeOnly 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'org.springframework.boot:spring-boot-starter-log4j2'
+    runtimeOnly 'org.springframework.boot:spring-boot-starter-security'
+    runtimeOnly 'org.springframework.boot:spring-boot-starter-web'
+    runtimeOnly 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    runtimeOnly 'org.springframework.boot:spring-boot-starter-undertow'
+    runtimeOnly 'org.springframework.boot:spring-boot-starter-validation'
+    runtimeOnly 'org.springframework.security:spring-security-aspects'
 
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    annotationProcessor 'org.projectlombok:lombok:1.18.26'
 
     constraints {
         implementation("io.netty:netty-codec-http:4.1.89.Final") {
@@ -45,8 +60,25 @@ dependencies {
             because 'Avoid vulnerable'
         }
     }
+    modules {
+        module("org.springframework.boot:spring-boot-starter-tomcat") {
+            replacedBy("org.springframework.boot:spring-boot-starter-undertow", "Use Undertow instead of Tomcat")
+        }
+        module("org.springframework.boot:spring-boot-starter-logging") {
+            replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of logging")
+        }
+    }
 }
 
 test {
     useJUnitPlatform()
+}
+
+compileJava {
+    options.fork = true
+    options.forkOptions.with {
+        memoryMaximumSize = '4096m'
+        memoryInitialSize = '512m'
+        jvmArgs += '-XX:+UseG1GC'
+    }
 }

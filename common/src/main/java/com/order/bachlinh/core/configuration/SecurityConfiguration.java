@@ -15,6 +15,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -40,6 +41,7 @@ import java.util.Collections;
 @EnableWebSecurity
 @EnableMethodSecurity(proxyTargetClass = true, mode = AdviceMode.ASPECTJ)
 @PropertySource("classpath:common.properties")
+@Lazy
 class SecurityConfiguration {
     private String urlContentBase;
     private String urlCustomer;
@@ -54,22 +56,26 @@ class SecurityConfiguration {
     private ApplicationContext applicationContext;
 
     @Bean
+    @Lazy
     AuthenticationFilter authenticationFilter() {
         Collection<String> urls = Arrays.asList(urlContentBase, loginUrl, registerUrl, homeUrl, resourceUrl);
         return new AuthenticationFilter(applicationContext, urls);
     }
 
     @Bean
+    @Lazy
     LoggingRequestFilter loggingRequestFilter() {
         return new LoggingRequestFilter(applicationContext, clientUrl);
     }
 
     @Bean
+    @Lazy
     ClientSecretFilter clientSecretFilter() {
         return new ClientSecretFilter(applicationContext, clientUrl);
     }
 
     @Bean
+    @Lazy
     DefaultSecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> {
@@ -108,17 +114,20 @@ class SecurityConfiguration {
     }
 
     @Bean
+    @Lazy
     TokenManager tokenManager() {
         return new TokenManagerProvider(JwtDecoderFactory.Builder.SHA256_ALGORITHM, secretKey, applicationContext)
                 .getTokenManager();
     }
 
     @Bean
+    @Lazy
     BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(20);
     }
 
     @Bean
+    @Lazy
     ClientSecretHandler clientSecretHandler() {
         return new ClientSecretHandler();
     }

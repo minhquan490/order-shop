@@ -1,5 +1,6 @@
 package com.order.bachlinh.server.component.handler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOutboundHandlerAdapter;
 import io.netty.channel.ChannelPromise;
@@ -16,10 +17,12 @@ import java.util.Optional;
 
 public abstract class AbstractOutboundHandler<RESPONSE, TRANSFER> extends ChannelOutboundHandlerAdapter {
     private final Class<RESPONSE> responseClass;
+    private final ObjectMapper objectMapper;
 
     @SuppressWarnings("unchecked")
     protected AbstractOutboundHandler() {
         this.responseClass = (Class<RESPONSE>) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        this.objectMapper = HttpConventionHandler.getSingleton();
     }
 
     @Override
@@ -27,7 +30,7 @@ public abstract class AbstractOutboundHandler<RESPONSE, TRANSFER> extends Channe
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         if (msg.getClass().isAssignableFrom(responseClass)) {
             TRANSFER data = processResponse((RESPONSE) msg);
-            HttpResponse<TRANSFER> response = new DummyHttpResponse<>(data, lookupHeader());
+            HttpResponse<String> response = new DummyHttpResponse<>(objectMapper.writeValueAsString(data), lookupHeader());
             super.write(ctx, response, promise);
         }
         super.write(ctx, msg, promise);

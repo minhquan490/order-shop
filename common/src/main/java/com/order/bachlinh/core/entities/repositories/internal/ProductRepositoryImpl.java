@@ -100,10 +100,10 @@ class ProductRepositoryImpl extends AbstractRepository<Product, String> implemen
                     root.get(Product_.taobaoUrl),
                     root.get(Product_.description),
                     root.get(Product_.categories),
-                    root.get(Product_.pictures)
+                    root.get(Product_.medias)
             );
             root.join(Product_.categories, JoinType.INNER);
-            root.join(Product_.pictures, JoinType.LEFT);
+            root.join(Product_.medias, JoinType.LEFT);
             AtomicReference<Predicate> predicateWrapper = new AtomicReference<>();
             copyConditions.forEach((key, value) -> {
                 Predicate predicate = switch (key) {

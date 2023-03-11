@@ -119,7 +119,7 @@ class InternalHandler implements ChannelHandlerLookup, ChannelDecoratorProvider 
         private final ApplicationContext springContext;
 
         InternalConstructorParameterProvider() {
-            this.springContext = new AnnotationConfigApplicationContext(ServerApplication.class.getPackageName(), "com.order.bachlinh.core.configuration");
+            this.springContext = new AnnotationConfigApplicationContext(ServerApplication.class.getPackageName());
         }
 
         @Override
