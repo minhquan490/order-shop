@@ -6,5 +6,5 @@ import org.springframework.context.annotation.Import;
 
 @Configuration
 @Import(HttpClientConfiguration.class)
-public class SpringContainer {
+class SpringContainer {
 }

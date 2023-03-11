@@ -4,7 +4,7 @@ import com.order.bachlinh.server.boot.H3Server;
 import com.order.bachlinh.server.boot.ServerInitializer;
 
 public class ServerApplication {
-    private static H3Server server;
+    private static final H3Server server;
 
     static {
         ServerInitializer initializer = new ServerInitializer();
@@ -12,7 +12,8 @@ public class ServerApplication {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> server.close()));
+        Runtime.getRuntime().addShutdownHook(new Thread(server::close));
         server.run();
     }
 }
+

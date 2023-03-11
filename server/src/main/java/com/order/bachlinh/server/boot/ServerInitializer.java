@@ -19,6 +19,8 @@ public final class ServerInitializer {
                 .handlerPackage(System.getProperty("server.handler.package"))
                 .numberOfThread(Integer.parseInt(System.getProperty("server.thread")))
                 .tokenHandler(InsecureQuicTokenHandler.INSTANCE)
+                .maxStreamsUnidirectional(Long.parseLong(System.getProperty("server.initial.maxstream.unidirectional")))
+                .maxStreamDataUnidirectional(Long.parseLong(System.getProperty("server.initial.maxstream.data.unidirectional")))
                 .build();
     }
 }

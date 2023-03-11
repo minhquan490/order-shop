@@ -82,6 +82,7 @@ public final class H3Server {
 
     public void close() {
         channel.close();
+        channel = null;
     }
 
     private EventLoopGroupFactory buildEventLoopGroupFactory() {

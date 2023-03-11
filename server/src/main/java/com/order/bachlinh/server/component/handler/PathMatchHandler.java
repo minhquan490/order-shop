@@ -32,7 +32,7 @@ public final class PathMatchHandler extends ChannelInboundHandlerAdapter {
             switch (req.method()) {
                 case "GET" -> {
                     Optional<String> contentType = req.headers().firstValue(HttpHeaderNames.CONTENT_TYPE.toString());
-                    if (contentType.isEmpty()) {
+                    if (contentType.isPresent()) {
                         super.channelRead(ctx, msg);
                         return;
                     }
