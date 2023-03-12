@@ -148,10 +148,16 @@ class DefaultRestTemplateFactory implements RestTemplateFactory {
     private static class RestTemplateImpl implements RestTemplate {
         private final org.springframework.web.client.RestTemplate internalTemplate;
         private final ObjectMapper jsonConverter;
+        private static final String SEPARATE = "\n\n\n\n\n\n";
 
         private RestTemplateImpl(ClientHttpRequestFactory requestFactory) {
             this.internalTemplate = new org.springframework.web.client.RestTemplate(requestFactory);
             this.jsonConverter = new ObjectMapper();
+        }
+
+        @Override
+        public String getSeparate() {
+            return SEPARATE;
         }
 
         @Override
@@ -221,7 +227,7 @@ class DefaultRestTemplateFactory implements RestTemplateFactory {
                 Object resp = response.getBody();
                 if (resp instanceof byte[] value) {
                     byte[] header = responseBuffer.array();
-                    String builder = new String(header, StandardCharsets.UTF_8) + '\n' + new String(value, StandardCharsets.UTF_8);
+                    String builder = new String(header, StandardCharsets.UTF_8) + SEPARATE + new String(value, StandardCharsets.UTF_8);
                     responseBuffer = ByteBuffer.wrap(builder.getBytes(StandardCharsets.UTF_8));
                 }
             }

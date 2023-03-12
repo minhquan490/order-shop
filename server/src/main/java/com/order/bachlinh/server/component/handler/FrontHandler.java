@@ -8,8 +8,6 @@ import io.netty.incubator.codec.http3.Http3FrameToHttpObjectCodec;
 import io.netty.incubator.codec.http3.Http3HeadersFrame;
 import io.netty.incubator.codec.http3.Http3RequestStreamInboundHandler;
 
-import java.lang.invoke.CallSite;
-import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -78,7 +76,7 @@ public final class FrontHandler extends Http3RequestStreamInboundHandler impleme
     @Override
     protected void channelRead(ChannelHandlerContext ctx, Http3HeadersFrame frame, boolean isLast) {
         try {
-            channelReadHeader.invokeExact(internalHandler, ctx, frame, isLast);
+            channelReadHeader.invoke(internalHandler, ctx, frame, isLast);
         } catch (Throwable e) {
             throw new IllegalStateException("Can not call method Http3FrameToHttpObjectCodec.channelRead(ChannelHandlerContext, Http3HeadersFrame, boolean)", e);
         }
@@ -87,37 +85,22 @@ public final class FrontHandler extends Http3RequestStreamInboundHandler impleme
     @Override
     protected void channelRead(ChannelHandlerContext ctx, Http3DataFrame frame, boolean isLast) {
         try {
-            channelReadData.invokeExact(internalHandler, ctx, frame, isLast);
+            channelReadData.invoke(internalHandler, ctx, frame, isLast);
         } catch (Throwable e) {
             throw new IllegalStateException("Can not call method Http3FrameToHttpObjectCodec.channelRead(ChannelHandlerContext, Http3DataFrame, boolean)", e);
         }
     }
 
     private static MethodHandle channelReadHeader() throws Throwable {
-        MethodHandles.Lookup caller = MethodHandles.lookup();
-        String invokedName = "apply";
-        MethodType samMethodType = MethodType.methodType(void.class, ChannelHandlerContext.class, Http3HeadersFrame.class, boolean.class);
-        MethodType invokedType = MethodType.methodType(ChannelHeaderRead.class, FrontHandler.class);
-        MethodHandle implementMethod = caller.findVirtual(Http3FrameToHttpObjectCodec.class, "channelRead", samMethodType);
-        CallSite site = LambdaMetafactory.metafactory(caller, invokedName, invokedType, samMethodType, implementMethod, samMethodType);
-        return site.getTarget();
+        MethodType type = MethodType.methodType(void.class, ChannelHandlerContext.class, Http3HeadersFrame.class, boolean.class);
+        MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(Http3FrameToHttpObjectCodec.class, MethodHandles.lookup());
+        return lookup.findVirtual(Http3FrameToHttpObjectCodec.class, "channelRead", type);
+
     }
 
     private static MethodHandle channelReadData() throws Throwable {
-        MethodHandles.Lookup caller = MethodHandles.lookup();
-        String invokedName = "apply";
-        MethodType samMethodType = MethodType.methodType(void.class, ChannelHandlerContext.class, Http3DataFrame.class, boolean.class);
-        MethodType invokedType = MethodType.methodType(ChannelDataRead.class, FrontHandler.class);
-        MethodHandle implementMethod = caller.findVirtual(Http3FrameToHttpObjectCodec.class, "channelRead", samMethodType);
-        CallSite site = LambdaMetafactory.metafactory(caller, invokedName, invokedType, samMethodType, implementMethod, samMethodType);
-        return site.getTarget();
-    }
-
-    private interface ChannelHeaderRead {
-        void apply(ChannelHandlerContext ctx, Http3HeadersFrame frame, boolean isLast);
-    }
-
-    private interface ChannelDataRead {
-        void apply(ChannelHandlerContext ctx, Http3DataFrame frame, boolean isLast);
+        MethodType type = MethodType.methodType(void.class, ChannelHandlerContext.class, Http3DataFrame.class, boolean.class);
+        MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(Http3FrameToHttpObjectCodec.class, MethodHandles.lookup());
+        return lookup.findVirtual(Http3FrameToHttpObjectCodec.class, "channelRead", type);
     }
 }

@@ -24,7 +24,7 @@ import java.util.Optional;
 
 /**
  * Internal configuration for spring cache abstraction. This file
- * also define how hibernate l2 caching implemented to this project.
+ * also defines how hibernate l2 caching implemented to this project.
  *
  * @author Hoang Minh Quan
  * */
@@ -33,7 +33,7 @@ import java.util.Optional;
 @EnableCaching(proxyTargetClass = true, mode = AdviceMode.ASPECTJ)
 @RequiredArgsConstructor
 @Lazy
-class CacheConfiguration {
+public class CacheConfiguration {
     private final ApplicationContext applicationContext;
 
     @Bean

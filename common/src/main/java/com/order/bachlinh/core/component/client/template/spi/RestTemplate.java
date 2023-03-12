@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 
 public interface RestTemplate {
+    String getSeparate();
 
     JsonNode get(String url, @Nullable Object body, @Nullable MultiValueMap<String, String> headers, Map<String, ?> uriVariables) throws IOException;
     JsonNode put(String url, Object body, @Nullable MultiValueMap<String, String> headers, Map<String, ?> uriVariables) throws IOException;

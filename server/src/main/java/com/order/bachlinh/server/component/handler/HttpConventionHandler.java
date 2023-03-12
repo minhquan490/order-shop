@@ -60,7 +60,7 @@ public final class HttpConventionHandler extends ChannelInboundHandlerAdapter im
             response.headers().map().forEach(headers::set);
             DefaultFullHttpResponse resp = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1,
                         HttpResponseStatus.valueOf(response.statusCode()),
-                        Unpooled.wrappedBuffer(SINGLETON.writeValueAsBytes(response.body())),
+                        Unpooled.wrappedBuffer(SINGLETON.writeValueAsString(response.body()).getBytes(StandardCharsets.UTF_8)),
                         headers,
                         headers);
             ctx.write(resp);

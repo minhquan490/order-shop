@@ -1,3 +1,10 @@
+buildscript {
+    ext {
+        protobufVersion = '3.22.2'
+        log4j2Version = '2.20.0'
+    }
+}
+
 plugins {
     id 'java'
     id 'io.spring.dependency-management'
@@ -25,13 +32,14 @@ dependencies {
     implementation 'com.google.guava:guava'
     implementation 'io.netty.incubator:netty-incubator-codec-http3:0.0.16.Final'
     implementation project(":common")
-    implementation 'com.google.protobuf:protobuf-java:4.0.0-rc-2'
+    implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
     implementation 'org.springframework:spring-context:6.0.4'
+    implementation 'org.springframework:spring-web:6.0.4'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
-    implementation 'org.apache.logging.log4j:log4j-core:2.20.0'
-    implementation 'org.apache.logging.log4j:log4j-slf4j2-impl:2.20.0'
+    implementation "org.apache.logging.log4j:log4j-core:${log4j2Version}"
+    implementation "org.apache.logging.log4j:log4j-slf4j2-impl:${log4j2Version}"
     compileOnly 'org.projectlombok:lombok:1.18.26'
-    runtimeOnly 'org.apache.logging.log4j:log4j-jul:2.20.0'
+    runtimeOnly "org.apache.logging.log4j:log4j-jul:${log4j2Version}"
     runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
     runtimeOnly 'org.springframework.boot:spring-boot-starter-aop'
     runtimeOnly 'org.springframework.boot:spring-boot-starter-cache'

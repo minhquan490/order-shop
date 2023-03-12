@@ -1,10 +1,10 @@
 package com.order.bachlinh.server.handler.internal;
 
 import com.google.common.reflect.ClassPath;
-import com.order.bachlinh.server.ServerApplication;
 import com.order.bachlinh.server.boot.spi.ChannelDecorator;
 import com.order.bachlinh.server.component.handler.AbstractInboundHandler;
 import com.order.bachlinh.server.component.handler.AbstractOutboundHandler;
+import com.order.bachlinh.server.component.spring.SpringContainer;
 import com.order.bachlinh.server.handler.annotation.HandlerInitializer;
 import com.order.bachlinh.server.handler.annotation.QuicChannel;
 import com.order.bachlinh.server.handler.annotation.QuicStreamChannel;
@@ -119,7 +119,7 @@ class InternalHandler implements ChannelHandlerLookup, ChannelDecoratorProvider 
         private final ApplicationContext springContext;
 
         InternalConstructorParameterProvider() {
-            this.springContext = new AnnotationConfigApplicationContext(ServerApplication.class.getPackageName());
+            this.springContext = new AnnotationConfigApplicationContext(SpringContainer.class.getPackageName());
         }
 
         @Override

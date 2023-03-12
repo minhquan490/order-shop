@@ -44,7 +44,7 @@ dependencies {
     implementation 'org.hibernate.orm:hibernate-jcache:6.1.6.Final'
     implementation 'com.lmax:disruptor:3.4.4'
     implementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
-    implementation 'com.google.protobuf:protobuf-java:4.0.0-rc-2'
+    implementation 'com.google.protobuf:protobuf-java:3.22.2'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'

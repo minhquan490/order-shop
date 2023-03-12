@@ -11,7 +11,7 @@ public class ServerApplication {
         server = initializer.configServer();
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws Throwable {
         Runtime.getRuntime().addShutdownHook(new Thread(server::close));
         server.run();
     }
